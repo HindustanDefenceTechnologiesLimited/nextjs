@@ -82,9 +82,9 @@ const MissionCardSkeleton = () => (
 // --- Main Component ---
 const MissionGridList = (props: Props) => {
     // Redux Selectors
-    const missions = useSelector((state: RootState) => state.mission.items);
-    const loading = useSelector((state: RootState) => state.mission.loading);
-    const error = useSelector((state: RootState) => state.mission.error);
+    const missions = useSelector((state: RootState) => state.missions.items);
+    const loading = useSelector((state: RootState) => state.missions.loading);
+    const error = useSelector((state: RootState) => state.missions.error);
     const [searchQuery, setSearchQuery] = useState("");
     
     // 1. Error Toast Effect using sonner's direct toast function

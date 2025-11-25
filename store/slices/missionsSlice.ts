@@ -1,4 +1,4 @@
-// store/slices/missionSlice.ts
+// store/slices/missionsSlice.ts
 import { Mission } from '@/lib/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
@@ -16,7 +16,7 @@ const initialState: MissionsState = {
 };
 
 const missionsSlice = createSlice({
-  name: 'mission',
+  name: 'missions',
   initialState,
   reducers: {
     addMission(state, action: PayloadAction<Mission>) {

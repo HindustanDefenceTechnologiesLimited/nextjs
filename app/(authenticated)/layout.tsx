@@ -1,7 +1,8 @@
 'use client'
 import MiniBar from '@/components/mission-layout/mini-bar'
-import CreateMissionButton from '@/components/mission/mission-create-button'
+import CreateMissionButton from '@/components/mission-layout/mission-create-button'
 import useAuthInit from '@/hooks/use-auth-init'
+import { Loader2Icon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { use, useEffect } from 'react'
 import { useSelector } from 'react-redux'
@@ -26,13 +27,12 @@ const layout = ({ children, params }: Props) => {
     }, [isLoading, isAuthenticated, router]);
 
     if (isLoading) {
-        return <div className="flex items-center justify-center h-[100vh]">Checking Authentication...</div>;
+        return <div className="flex items-center justify-center h-screen"><Loader2Icon className="animate-spin mr-2" /> Checking Authentication</div>;
     }
     return (
         <div className='flex h-screen'>
             <MiniBar />
             <main className='w-full '>
-                {/* <CreateMissionButton onMissionCreated={() => {}} /> */}
                 {children}
             </main>
         </div>

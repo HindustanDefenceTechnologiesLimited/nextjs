@@ -1,5 +1,5 @@
 'use client'
-import MissionGridList from '@/components/mission/mission-list-grid'
+import MissionGridList from '@/components/mission-layout/mission-list-grid'
 import React, { useEffect } from 'react'
 import { addMission, removeMission, setMissions, setLoading, setError } from '@/store/slices/missionsSlice';
 import api from '@/lib/auth';

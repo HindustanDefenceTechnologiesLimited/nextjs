@@ -1,12 +1,14 @@
 // store/store.ts
 import { configureStore } from '@reduxjs/toolkit';
-import missionReducer from './slices/missionsSlice';
+import missionsReducer from './slices/missionsSlice';
+import missionReducer from './slices/missionSlice';
 import authReducer from './slices/authSlice';
 
 export const store = configureStore({
   reducer: {
-    mission: missionReducer,
+    missions: missionsReducer,
     auth: authReducer,
+    mission: missionReducer
   },
 });
 
