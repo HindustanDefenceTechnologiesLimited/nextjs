@@ -1,4 +1,4 @@
-'use client'
+ 'use client'
 import api from '@/lib/auth'
 import { useAppDispatch } from '@/store/hook'
 import { setError, setLoading } from '@/store/slices/missionsSlice'
@@ -27,7 +27,12 @@ const layout = ({ children, params }: Props) => {
         };
         fetchMission();
     }, []);
-    return children
+
+    return (
+        <>
+            {children}
+        </>
+    )
 }
 
 export default layout

@@ -1,14 +1,19 @@
-import React, { use } from 'react'
+'use client'
+import React, { use, useEffect, useState } from 'react'
 
 type Props = {}
 
 export default function Page({
-    params,
+  params,
 }: {
-    params: Promise<{ missionId: string }>
+  params: Promise<{ missionId: string }>
 }) {
-    const { missionId } = use(params)
-    return (
-        <div>page : {missionId}</div>
-    )
+
+  const { missionId } = use(params)
+
+  return (
+    <div>
+      Mission Detail Page - Mission ID: {missionId}
+    </div>
+  )
 }
