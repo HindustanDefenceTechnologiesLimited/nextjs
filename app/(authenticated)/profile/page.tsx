@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { User } from "@/lib/types";
+import LogoutButton from "@/components/auth/logout-button";
 
 
 const Page = () => {
@@ -46,18 +47,8 @@ const Page = () => {
         fetchUser();
     }, []);
 
-    const handleLogout = async () => {
-        try {
-            await api.post("/api/auth/logout");
-            router.push("/login");
-        } catch (error) {
-            console.error("Logout error:", error);
-        }
-    };
 
-    // --------------------------
-    // SKELETON LOADING STATE
-    // --------------------------
+
     if (loading) {
         return (
             <div className="max-w-xl mx-auto mt-10 p-4">
@@ -83,9 +74,6 @@ const Page = () => {
         );
     }
 
-    // --------------------------
-    // ERROR UI (NO CRASH)
-    // --------------------------
     if (error) {
         return (
             <div className="max-w-xl mx-auto mt-10 p-4">
@@ -108,7 +96,6 @@ const Page = () => {
         );
     }
 
-    // If still no user (safety)
     if (!user) {
         return (
             <div className="max-w-xl mx-auto mt-10 p-4 text-center text-muted-foreground">
@@ -117,9 +104,6 @@ const Page = () => {
         );
     }
 
-    // --------------------------
-    // MAIN PROFILE UI
-    // --------------------------
     return (
         <div className="max-w-xl mx-auto mt-10 p-4 space-y-4">
             <div className="flex flex-row items-center justify-between">
@@ -138,14 +122,14 @@ const Page = () => {
                     </div>
                 </div>
 
-                {/* LOGOUT BUTTON */}
+                <LogoutButton>
                 <Button
                     variant="outline"
-                    onClick={handleLogout}
                     className="text-red-500"
                 >
                     <LogOut className="w-4 h-4" /> Logout
                 </Button>
+                </LogoutButton>
             </div>
             <Separator />
             <div className="space-y-5">

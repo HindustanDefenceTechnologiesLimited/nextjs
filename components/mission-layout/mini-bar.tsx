@@ -1,9 +1,10 @@
 'use client'
 import { ModeToggle } from '../ui/theme-toggle'
 import { Button } from '../ui/button'
-import { User2Icon } from 'lucide-react'
+import { LogOutIcon, User2Icon } from 'lucide-react'
 import Link from 'next/link'
 import SILogo from '../ui/logo-si'
+import LogoutButton from '../auth/logout-button'
 
 type Props = {}
 
@@ -30,6 +31,11 @@ const MiniBar = (props: Props) => {
                         <User2Icon className='w-4 h-4' />
                     </Button>
                 </Link>
+                    <LogoutButton>
+                    <Button variant='destructive' size='icon' >
+                        <LogOutIcon className='w-4 h-4' />
+                    </Button>
+                    </LogoutButton>
                 <ModeToggle />
             </footer>
         </div>

@@ -7,14 +7,17 @@ import { logout, setAccessToken } from "@/store/slices/authSlice";
 // Attach token from Redux to every request
 api.interceptors.request.use((config) => {
   const token = store.getState().auth.accessToken;
+
   if (token) {
     config.headers = config.headers || {};
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
 // Response Interceptor (Refresh Logic)
+// Response interceptor with safe refresh logic
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
@@ -25,10 +28,8 @@ api.interceptors.response.use(
     }
 
     const status = error.response?.status;
-
     const url = originalRequest.url || "";
-    const isRefreshRequest =
-      url.includes("/api/auth/refresh") || url.includes("/auth/refresh");
+    const isRefreshRequest = url.includes("/api/auth/refresh");
 
     if (status === 401 && !isRefreshRequest) {
       originalRequest._retry = true;
@@ -41,19 +42,22 @@ api.interceptors.response.use(
           { withCredentials: true }
         );
 
-        const newAccessToken = refreshResponse.data?.accessToken;
+        const newToken = refreshResponse.data?.accessToken;
 
-        if (!newAccessToken) {
+        if (!newToken) {
           store.dispatch(logout());
           return Promise.reject(error);
         }
 
-        store.dispatch(setAccessToken(newAccessToken));
+        // ✔ FIX: UPDATE REDUX AUTH STATE
+        store.dispatch(setAccessToken(newToken));
 
-        originalRequest.headers = originalRequest.headers || {};
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        // ✔ Apply new token to retry request
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
 
+        // ✔ Retry with the correct token
         return api(originalRequest);
+
       } catch (refreshErr) {
         store.dispatch(logout());
         return Promise.reject(refreshErr);
@@ -63,5 +67,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 
 export default api;

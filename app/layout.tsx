@@ -4,7 +4,6 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/provider/theme-provider";
 import ReduxProvider from "@/components/provider/redux-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { AuthRouteGuard } from "@/components/auth/auth-route-guard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,9 +39,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Toaster position="bottom-center" richColors />
-            <AuthRouteGuard>
               {children}
-            </AuthRouteGuard>
           </ThemeProvider>
         </ReduxProvider>
       </body>
