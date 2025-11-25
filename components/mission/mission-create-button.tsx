@@ -26,14 +26,19 @@ import { Separator } from "@/components/ui/separator"
 import { Loader, PlusIcon } from "lucide-react"
 import axios from "axios"
 import { CreateMissionDto, MapCoordinates, Mission, MissionStatus } from "@/lib/types"
+import { useAppDispatch } from "@/store/hook"
+import { addMission } from "@/store/slices/missionsSlice"
+import api from "@/lib/auth"
 
 type Props = {
-    onMissionCreated: (mission: Mission) => void
+    onMissionCreated?: (mission: Mission) => void
 }
 
 
 
-const CreateMissionButton = ({ onMissionCreated }: Props) => {
+const MissionCreateButton = ({ onMissionCreated }: Props) => {
+    const dispatch = useAppDispatch();
+
     const [loading, setLoading] = useState(false);
     const [form, setForm] = useState<CreateMissionDto>({
         name: "",
@@ -54,14 +59,15 @@ const CreateMissionButton = ({ onMissionCreated }: Props) => {
         }
         try {
             setLoading(true);
-            const res = await axios.post<Mission>(
-                process.env.NEXT_PUBLIC_SERVER_URL + '/api/users',
+            const res = await api.post('/api/mission/create',
                 form
             );
+            console.log(res);
             if (res.status === 201) {
                 toast.success('Mission created successfully.');
             }
-            onMissionCreated(res.data);
+            dispatch(addMission(res.data.data));
+            onMissionCreated && onMissionCreated(res.data);
         } catch (error) {
             toast.error('An unexpected error occurred.');
         } finally {
@@ -150,4 +156,4 @@ const CreateMissionButton = ({ onMissionCreated }: Props) => {
     )
 }
 
-export default CreateMissionButton
+export default MissionCreateButton

@@ -216,6 +216,8 @@ export interface User {
   // Relations (optional for queries)
   createdMissions?: Mission[];
   assignedAlerts?: Alert[];
+  annotations?: Annotation[];
+  
 }
 
 export interface Mission {
@@ -241,6 +243,7 @@ export interface Mission {
   tracks?: Track[];
   geofences?: Geofence[];
   alerts?: Alert[];
+  annotations?: Annotation[];
 }
 
 export interface Sensor {
@@ -263,6 +266,7 @@ export interface Sensor {
   // Relations (optional for queries)
   mission?: Mission;
   detections?: Detection[];
+  asset?: Asset;
 }
 
 export interface Asset {
@@ -282,6 +286,7 @@ export interface Asset {
   mission?: Mission;
   objectiveAllocations?: ObjectiveAllocation[];
   positions?: AssetPosition[];
+  sensors?: Sensor[];
 }
 
 export interface AssetPosition {
@@ -381,6 +386,7 @@ export interface Detection {
   boundingBox?: BoundingBox;
   imageUrl?: string;
   videoUrl?: string;
+  audioUrl?: string;
   rawData?: Record<string, any>;
   metadata?: Record<string, any>;
 

@@ -1,6 +1,6 @@
 'use client'
-import MiniBar from '@/components/mission-layout/MiniBar'
-import CreateMissionButton from '@/components/mission/CreateMissionButton'
+import MiniBar from '@/components/mission-layout/mini-bar'
+import CreateMissionButton from '@/components/mission/mission-create-button'
 import React, { use } from 'react'
 
 type Props = {
@@ -14,7 +14,7 @@ const layout = ({ children, params }: Props) => {
         <div className='flex h-screen'>
             <MiniBar />
             <main className='w-full '>
-                <CreateMissionButton onMissionCreated={() => {}} />
+                {/* <CreateMissionButton onMissionCreated={() => {}} /> */}
             {children}
             </main>
         </div>
