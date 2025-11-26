@@ -1,5 +1,5 @@
 import api from '@/lib/auth';
-import { Track } from '@/lib/types';
+import { Track, TrackPosition } from '@/lib/types';
 import { useAppDispatch } from '@/store/hook'
 import { setError, setLoading, updateTrack } from '@/store/slices/missionSlice';
 import { RootState } from '@/store/store';
@@ -14,11 +14,12 @@ import {
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { MapPinIcon } from 'lucide-react';
+import { setMapData, setMapType } from '@/store/slices/mapSlice';
 type Props = {
     track: Track
 }
 
-const TrackPosition = ({ track }: Props) => {
+const TrackPositions = ({ track }: Props) => {
     const dispatch = useAppDispatch();
     const mission = useSelector((state: RootState) => state.mission.data);
     useEffect(() => {
@@ -26,7 +27,8 @@ const TrackPosition = ({ track }: Props) => {
             try {
                 dispatch(setLoading(true));
                 const response = await api.post('/api/trackpositions/multiple', {
-                    'trackId': track.id
+                    'trackId': track.id,
+                    'timestampOrder': 'desc'
                 });
                 console.log(response.data.data);
                 dispatch(updateTrack({ ...track, positions: response.data.data } as Track));
@@ -51,11 +53,16 @@ const TrackPosition = ({ track }: Props) => {
                     <AccordionContent className='max-h-80 overflow-y-auto'>
                         {
 
-                            mission.tracks?.find((trk) => trk.id === track.id)?.positions?.map((position) => {
+                            mission.tracks?.find((trk) => trk.id === track.id)?.positions?.map((position: TrackPosition) => {
                                 return (
                                     <div key={position.id} className='hover:bg-input pl-2 flex justify-between items-center rounded-md'>
                                         <span className='text-sm'>{format(new Date(position.timestamp), 'dd/MM/yyyy HH:mm:ss')}</span>
-                                        <Button variant='ghost' size='icon-sm'>
+                                        <Button variant='ghost' size='icon-sm'
+                                            onClick={() => {
+                                                dispatch(setMapType('trackPosition'))
+                                                dispatch(setMapData(position))
+                                            }}
+                                        >
                                             <MapPinIcon className='w-4 h-4' />
                                         </Button>
                                     </div>
@@ -70,4 +77,4 @@ const TrackPosition = ({ track }: Props) => {
     )
 }
 
-export default TrackPosition
+export default TrackPositions

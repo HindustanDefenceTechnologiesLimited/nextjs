@@ -18,7 +18,7 @@ import { useAppDispatch } from "@/store/hook";
 import { setSidebarData } from "@/store/slices/sidebarSlice";
 import { setMission, updateTrack } from "@/store/slices/missionSlice";
 import { renderIcon } from "../list/track-list";
-import TrackPosition from "./track-position";
+import TrackPositions from "./track-positions";
 
 const TrackDetail = () => {
   const [originalTrack, setOriginalTrack] = useState<Track>(useSelector((state: RootState) => state.sidebar.data) as Track);
@@ -340,7 +340,7 @@ const TrackDetail = () => {
             )}
           </Section>
         )}
-        <TrackPosition track={track} />
+        <TrackPositions track={track} />
       </div>
       <div className="sticky bottom-0 bg-card/30 backdrop-blur-lg justify-end rounded-b-md p-2 flex gap-2">
         <Button variant="ghost" size="sm" onClick={handleCancel}>
