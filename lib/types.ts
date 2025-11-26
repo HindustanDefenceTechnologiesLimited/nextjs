@@ -188,8 +188,9 @@ export interface Velocity {
 }
 
 export interface Classification {
-  confidence: number; // 0.0 - 1.0
-  subtype?: string;
+  size?: string; // 0.0 - 1.0
+  subType?: string;
+  color?: string;
   attributes?: Record<string, any>;
 }
 
@@ -225,14 +226,14 @@ export interface Mission {
   name: string;
   type: string;
   description?: string;
-  startTime: Date;
-  endTime?: Date;
+  startTime: string;
+  endTime?: string;
   status: MissionStatus;
   createdById: string;
   mapCoordinates?: MapCoordinates;
   metadata?: Record<string, any>;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 
   // Relations (optional for queries)
   creator?: User;
@@ -341,13 +342,13 @@ export interface Track {
   status: TrackStatus;
   threatLevel: ThreatLevel;
   missionId: string;
-  firstSeenAt: Date;
-  lastSeenAt: Date;
+  firstSeenAt: string;
+  lastSeenAt: string;
   classification?: Classification;
   velocity?: Velocity;
   metadata?: Record<string, any>;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 
   // Relations (optional for queries)
   mission?: Mission;
@@ -360,7 +361,7 @@ export interface Track {
 export interface TrackPosition {
   id: string;
   trackId: string;
-  timestamp: Date;
+  timestamp: string;
   latitude: number;
   longitude: number;
   altitude?: number;

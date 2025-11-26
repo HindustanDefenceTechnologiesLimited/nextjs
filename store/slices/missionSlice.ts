@@ -1,5 +1,5 @@
 // store/slices/missionSlice.ts
-import { Mission, MissionStatus } from '@/lib/types';
+import { Mission, MissionStatus, Track } from '@/lib/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 
@@ -14,12 +14,11 @@ const initialState: MissionState = {
     id: '',
     name: '',
     type: '',
-    startTime: new Date(),
-    endTime: new Date(),
+    startTime: '',
     status: MissionStatus.NEW,
     createdById: '',
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: '',
+    updatedAt: '',
   },
   loading: false,
   error: null,
@@ -38,9 +37,19 @@ const missionsSlice = createSlice({
     },
     setError(state, action: PayloadAction<string | null>) {
       state.error = action.payload;
+    },
+    updateTrack(state, action: PayloadAction<Track>) {
+      const trackId = action.payload.id;
+
+      state.data.tracks = state.data.tracks?.map((track) => {
+        if (track.id === trackId) {
+          return action.payload;
+        }
+        return track;
+      });
     }
   },
 });
 
-export const { setMission, setLoading, setError } = missionsSlice.actions;
+export const { setMission, setLoading, setError, updateTrack } = missionsSlice.actions;
 export default missionsSlice.reducer;

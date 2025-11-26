@@ -13,9 +13,11 @@ export default function Page({
   const { missionId } = use(params)
 
   return (
-    <div>
-      Mission Detail Page - Mission ID: {missionId}
+    <div className='flex h-screen'>
       <MissionLeftSidebar />
+      <main className='w-3/4'>
+        Mission Detail Page - Mission ID: {missionId}
+      </main>
     </div>
   )
 }

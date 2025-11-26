@@ -37,6 +37,7 @@
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@reduxjs/toolkit": "^2.10.1",
+    "@types/date-fns": "^2.6.3",
     "@types/dotenv": "^8.2.3",
     "axios": "^1.13.2",
     "class-variance-authority": "^0.7.1",

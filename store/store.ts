@@ -3,12 +3,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import missionsReducer from './slices/missionsSlice';
 import missionReducer from './slices/missionSlice';
 import authReducer from './slices/authSlice';
+import sidebarReducer from './slices/sidebarSlice'
 
 export const store = configureStore({
   reducer: {
     missions: missionsReducer,
     auth: authReducer,
-    mission: missionReducer
+    mission: missionReducer,
+    sidebar: sidebarReducer
   },
 });
 
