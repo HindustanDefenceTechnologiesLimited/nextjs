@@ -14,7 +14,7 @@ export default function Page({
     <div className='flex h-screen'>
       <MissionLeftSidebar />
       <main className='w-3/4'>
-
+      
       </main>
     </div>
   )
