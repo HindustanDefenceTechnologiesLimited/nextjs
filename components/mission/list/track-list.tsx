@@ -13,7 +13,7 @@ type Props = {
 const TrackList = ({ tracks = [] }: Props) => {
     const dispatch = useAppDispatch();
 
-    
+
     return (
         <div>
             {tracks.map((track) => (
@@ -27,7 +27,7 @@ const TrackList = ({ tracks = [] }: Props) => {
                     {renderIcon(track)}
                     {(track.trackId).split('-').map((id) => id.charAt(0).toUpperCase() + id.slice(1)).join(' ')}
                     <span className='ml-auto'>
-                    {threat(track.threatLevel)}
+                        {threat(track.threatLevel)}
                     </span>
                 </CommandItem>
             ))}
@@ -38,22 +38,22 @@ const TrackList = ({ tracks = [] }: Props) => {
 export default TrackList
 
 export const renderIcon = (track: Track) => {
-        if (track.type === 'PERSON') {
-            return <UserIcon className=" h-4 w-4" />;
-        } else if (track.type === 'VEHICLE') {
-            return <CarIcon className=" h-4 w-4" />
-        } else if (track.type === 'ANIMAL') {
-            return <DogIcon className=" h-4 w-4" />
-        } else if (track.type === 'UNKNOWN') {
-            return <ShieldQuestionMark className=" h-4 w-4" />
-        } else if (track.type === 'AIRCRAFT') {
-            return <PlaneIcon className=" h-4 w-4" />
-        } else if (track.type === 'VESSEL') {
-            return <ShipIcon className=" h-4 w-4" />
-        } else if (track.type === 'DRONE') {
-            return <DroneIcon className=" h-4 w-4" />
-        }
+    if (track.type === 'PERSON') {
+        return <UserIcon className=" h-4 w-4" />;
+    } else if (track.type === 'VEHICLE') {
+        return <CarIcon className=" h-4 w-4" />
+    } else if (track.type === 'ANIMAL') {
+        return <DogIcon className=" h-4 w-4" />
+    } else if (track.type === 'UNKNOWN') {
+        return <ShieldQuestionMark className=" h-4 w-4" />
+    } else if (track.type === 'AIRCRAFT') {
+        return <PlaneIcon className=" h-4 w-4" />
+    } else if (track.type === 'VESSEL') {
+        return <ShipIcon className=" h-4 w-4" />
+    } else if (track.type === 'DRONE') {
+        return <DroneIcon className=" h-4 w-4" />
     }
+}
 const color = (status: string) => {
     switch (status) {
         case "ACTIVE":

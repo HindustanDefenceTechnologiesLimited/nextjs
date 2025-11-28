@@ -9,7 +9,7 @@ import { Button } from '../ui/button';
 import MissionDetailSidebar from './mission-detail-sidebar';
 import AssetDetail from './detail/asset-detail';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
-import TrackDetail from './detail/track-detail';
+import TrackDetail from './detail/track/track-detail';
 import TrackList from './list/track-list';
 
 import {

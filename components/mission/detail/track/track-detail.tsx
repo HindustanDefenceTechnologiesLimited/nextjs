@@ -3,7 +3,7 @@
 import { Track } from "@/lib/types";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
-import DetailLayout from "./detail-layout";
+import DetailLayout from "../detail-layout";
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,17 +12,16 @@ import { Label } from "@/components/ui/label";
 import api from "@/lib/auth";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { XIcon } from "lucide-react";
 import { TRACK_HIRARCHY } from "@/lib/constants";
 import { useAppDispatch } from "@/store/hook";
 import { setSidebarData } from "@/store/slices/sidebarSlice";
-import { setMission, updateTrack } from "@/store/slices/missionSlice";
-import { renderIcon } from "../list/track-list";
+import {  updateTrack } from "@/store/slices/missionSlice";
+import { renderIcon } from "../../list/track-list";
 import TrackPositions from "./track-positions";
+import TrackFiles from "./track-files";
 
 const TrackDetail = () => {
   const [originalTrack, setOriginalTrack] = useState<Track>(useSelector((state: RootState) => state.sidebar.data) as Track);
-  // var originalTrack = useSelector((state: RootState) => state.sidebar.data) as Track;
   if (!originalTrack) return null;
 
   const dispatch = useAppDispatch();
@@ -87,6 +86,7 @@ const TrackDetail = () => {
       case "string":
         return (
           <DetailInputRow
+            key={label}
             label={label}
             value={value ?? ""}
             onChange={(v) => onAttributeChange(key, v)}
@@ -96,6 +96,8 @@ const TrackDetail = () => {
       case "integer":
         return (
           <DetailInputRow
+            key={label}
+
             label={label}
             value={value ?? ""}
             onChange={(v) => onAttributeChange(key, Number(v))}
@@ -104,7 +106,7 @@ const TrackDetail = () => {
 
       case "boolean":
         return (
-          <div className="flex justify-between mb-2">
+          <div className="flex justify-between mb-2" key={label}>
             <Label>{label}</Label>
             <Select
               value={String(value ?? "")}
@@ -234,14 +236,12 @@ const TrackDetail = () => {
           <p className="text-sm font-semibold">Type</p>
           <span className="text-sm flex gap-2 items-center">{renderIcon(track)} {track.type}</span>
         </div>
-        {/* Description */}
         <Textarea
           placeholder="Description"
           value={track.description || ""}
           onChange={(e) => onChange("description", e.target.value)}
         />
-
-        {/* Status / Threat Level */}
+        <TrackFiles track={track}/>
         <div className="flex flex-col gap-2">
           <div className="flex justify-between">
             <Label>Status</Label>

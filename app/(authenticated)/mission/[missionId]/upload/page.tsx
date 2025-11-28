@@ -21,10 +21,8 @@ const PARENT_TYPES = [
 
 export default function FileUploadForm() {
   const [file, setFile] = useState<File | null>(null);
-  const [parentType, setParentType] = useState<string>("MISSION");
-    const [saved, setSaved] = useState<string>("");
-  // Stores dynamic parent ID (trackId / missionId etc.)
-  const [parentId, setParentId] = useState("");
+  const [parentType, setParentType] = useState<string>("TRACK");
+  const [parentId, setParentId] = useState("cmi333zvb0033u4bgtqi4sivi");
 
   const handleUpload = async () => {
     if (!file) return toast.error("Please select a file");
@@ -35,8 +33,7 @@ export default function FileUploadForm() {
 
     const form = new FormData();
     form.append("file", file);
-    form.append("parentType", parentType);
-    form.append("ownerId", 'c9447e57-1df1-4e28-a699-6045595398c4');
+    form.append("parentType", 'TRACK');
 
     // Append relevant dynamic key
     switch (parentType) {
@@ -72,7 +69,6 @@ export default function FileUploadForm() {
 
       toast.success("Uploaded successfully!", { id: "upload" });
       console.log(res.data);
-
       // clear
       setFile(null);
       setParentId("");
@@ -137,8 +133,6 @@ export default function FileUploadForm() {
       <Button className="w-full" onClick={handleUpload}>
         Upload
       </Button>
-
-      <ImageViewer fileId={'cmigggh6f0003u4d4gqs6cvf7'} />
     </div>
   );
 }

@@ -38,12 +38,15 @@ const missionsSlice = createSlice({
     setError(state, action: PayloadAction<string | null>) {
       state.error = action.payload;
     },
-    updateTrack(state, action: PayloadAction<Track>) {
+    updateTrack(state, action: PayloadAction<Partial<Track> & { id: string }>) {
       const trackId = action.payload.id;
 
       state.data.tracks = state.data.tracks?.map((track) => {
         if (track.id === trackId) {
-          return action.payload;
+          return {
+            ...track,
+            ...action.payload,   // 🔥 merge instead of replace
+          };
         }
         return track;
       });

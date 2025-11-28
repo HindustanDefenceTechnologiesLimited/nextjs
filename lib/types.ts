@@ -352,6 +352,7 @@ export interface Track {
 
   // Relations (optional for queries)
   mission?: Mission;
+  files?: File[];
   positions?: TrackPosition[];
   detections?: Detection[];
   alerts?: Alert[];
@@ -475,6 +476,49 @@ export interface Event {
   // Relations (optional for queries)
   mission?: Mission;
 }
+
+
+export enum FileParent {
+  MISSION = "MISSION",
+  TRACK = "TRACK",
+  ASSET = "ASSET",
+  SENSOR = "SENSOR",
+  USER = "USER",
+  ANNOTATION = "ANNOTATION",
+  GEOFENCE = "GEOFENCE"
+}
+
+// Main File type
+export interface File {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  data: Buffer;
+  parentType: FileParent;
+  trackId: string | null;
+  missionId: string | null;
+  assetId: string | null;
+  sensorId: string | null;
+  userId: string | null;
+  annotationId: string | null;
+  geofenceId: string | null;
+  ownerId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  
+  // Relations
+  owner: User;
+  track?: Track | null;
+  mission?: Mission | null;
+  asset?: Asset | null;
+  sensor?: Sensor | null;
+  annotation?: Annotation | null;
+  geofence?: Geofence | null;
+  user?: User | null;
+}
+
+
 
 // ===================================
 // CREATE/UPDATE DTOs

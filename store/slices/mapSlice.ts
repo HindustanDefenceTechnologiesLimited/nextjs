@@ -6,6 +6,7 @@ import { set } from 'date-fns';
 
 type MapDataType = Track | TrackPosition | Asset | null;
 type MapType = 'track' | 'trackPosition' | 'asset' | null;
+
 type MapState = {
     data: MapDataType;
     type: MapType;
