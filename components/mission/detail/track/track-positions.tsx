@@ -15,6 +15,7 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { MapPinIcon } from 'lucide-react';
 import { setMapData, setMapType } from '@/store/slices/mapSlice';
+import NewTrackPosition from './new-track-postion';
 type Props = {
     track: Track
 }
@@ -65,7 +66,8 @@ const TrackPositions = ({ track }: Props) => {
                         Track Positions
                     </AccordionTrigger>
 
-                    <AccordionContent className="max-h-80 overflow-y-auto">
+                    <AccordionContent className="max-h-80 overflow-y-auto ">
+                        <NewTrackPosition track={track} onCreate={(newTrkPos)=>console.log(newTrkPos)} />
                         {positions.length === 0 && (
                             <div className="text-muted-foreground text-sm p-2">
                                 No positions available

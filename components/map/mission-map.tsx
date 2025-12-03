@@ -1,0 +1,22 @@
+import React, { useEffect } from 'react'
+import SimpleMap from './map-view'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/store/store'
+
+type Props = {}
+
+const MissionMap = (props: Props) => {
+    const mission = useSelector((state: RootState) => state.mission.data);
+
+    return (
+        <div>
+            <SimpleMap
+                entites={{
+                    tracks: mission.tracks || []
+                }}
+            />
+        </div>
+    )
+}
+
+export default MissionMap

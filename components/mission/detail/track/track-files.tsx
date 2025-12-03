@@ -21,8 +21,6 @@ const TrackFiles = ({ track }: Props) => {
     );
 
     const files = currentTrack?.files || [];
-    console.log(files);
-
     useEffect(() => {
         const fetchTrackFiles = async () => {
             try {
@@ -32,7 +30,7 @@ const TrackFiles = ({ track }: Props) => {
                 dispatch(
                     updateTrack({
                         id: track.id,
-                        files: response.data.data, // only update needed fields
+                        files: response.data.data,
                     })
                 );
 

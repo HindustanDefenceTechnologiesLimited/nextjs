@@ -4,6 +4,7 @@ import UploadFiles from '@/components/file/upload-files'
 import { use } from 'react'
 import { useAppSelector } from '@/store/hook'
 import { RootState } from '@/store/store'
+import MissionMap from '@/components/map/mission-map'
 
 type Props = {}
 
@@ -18,7 +19,7 @@ export default function Page({
     <div className='flex h-screen'>
       <MissionLeftSidebar />
       <main className='w-3/4'>
-      {JSON.stringify(map)}
+        <MissionMap />
       </main>
     </div>
   )
