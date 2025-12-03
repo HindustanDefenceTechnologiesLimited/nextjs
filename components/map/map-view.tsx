@@ -31,8 +31,7 @@ export default function SimpleMap({ entites }: Props) {
             container: mapContainer.current,
             style: "http://localhost:8080/styles/dark/style.json",
 
-            center: [78.8718, 21.7679],
-            // center: [73.8567, 18.5204 ],
+            center: [73.8567, 18.5204 ],
             zoom: 15,
         });
         // console.log(map.getCenter())
@@ -55,11 +54,11 @@ export default function SimpleMap({ entites }: Props) {
             mapRef.current = null;
         };
     }, []);
-    useEffect(() => {
-        if (!mapRef.current) return;
-        mapRef.current.setCenter([mission.mapCoordinates?.center.lng || 68, mission.mapCoordinates?.center.lat || 18]);
-        mapRef.current.setZoom(mission.mapCoordinates?.zoom || 15);
-    }, [mission.mapCoordinates]);
+    // useEffect(() => {
+    //     if (!mapRef.current) return;
+    //     mapRef.current.setCenter([mission.mapCoordinates?.center.lng || 68, mission.mapCoordinates?.center.lat || 18]);
+    //     mapRef.current.setZoom(mission.mapCoordinates?.zoom || 15);
+    // }, [mission.mapCoordinates]);
     // -------------------------------
     // RENDER MARKERS WHEN TRACKS CHANGE
     // -------------------------------
@@ -95,7 +94,7 @@ export default function SimpleMap({ entites }: Props) {
     }, [entites.tracks]);
 
     return (
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-full rounded-md overflow-hidden">
             <MapToolbar />
             <div
                 ref={mapContainer}

@@ -14,13 +14,7 @@ export default function Page({
   params: Promise<{ missionId: string }>
 }) {
   const { missionId } = use(params)
-  const map = useAppSelector((state: RootState)=> state.map.data);
   return (
-    <div className='flex h-screen'>
-      <MissionLeftSidebar />
-      <main className='w-full' >
-        <MissionMap />
-      </main>
-    </div>
+    <MissionMap />
   )
 }

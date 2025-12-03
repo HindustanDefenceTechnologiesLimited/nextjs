@@ -1,4 +1,6 @@
 'use client'
+import Header from '@/components/mission/header'
+import MissionLeftSidebar from '@/components/mission/mission-left-sidebar'
 import api from '@/lib/auth'
 import { Mission } from '@/lib/types'
 import { useAppDispatch } from '@/store/hook'
@@ -44,9 +46,13 @@ const layout = ({ children, params }: Props) => {
     }, []);
 
     return (
-        <>
-            {children}
-        </>
+        <div className='flex h-screen'>
+            <MissionLeftSidebar />
+            <main className='w-full' >
+                <Header/>
+                {children}
+            </main>
+        </div>
     )
 }
 

@@ -9,7 +9,7 @@ const MissionMap = (props: Props) => {
     const mission = useSelector((state: RootState) => state.mission.data);
 
     return (
-        <div className='w-full h-screen'>
+        <div className='w-full h-[95vh] pr-2'>
             <SimpleMap
                 entites={{
                     tracks: mission.tracks || []
