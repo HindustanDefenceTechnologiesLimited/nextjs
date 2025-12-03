@@ -1,4 +1,4 @@
-import TracksGrid from '@/components/grid/tracks-grid'
+import TracksGrid from '@/components/grid/track/tracks-grid'
 import React from 'react'
 
 type Props = {}
