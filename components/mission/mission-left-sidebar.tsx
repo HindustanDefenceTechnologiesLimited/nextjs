@@ -61,7 +61,7 @@ export default MissionLeftSidebar
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className='w-80 h-screen p-2'>
+    <div className='min-w-80 max-w-80 h-screen p-2'>
       <div className='bg-card h-full rounded-md'>
         {children}
       </div>

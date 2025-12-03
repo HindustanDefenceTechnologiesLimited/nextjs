@@ -17,23 +17,7 @@ const MapLocationSelector = ({ onSelect, center = [73.8567, 18.5204] }: Props) =
 
     const map = new maplibregl.Map({
       container: mapContainer.current,
-      style: {
-        version: 8,
-        sources: {
-          "offline-tiles": {
-            type: "raster",
-            tiles: ["http://localhost:8080/styles/basic-preview/512/{z}/{x}/{y}.png"],
-            tileSize: 512,
-          },
-        },
-        layers: [
-          {
-            id: "base",
-            type: "raster",
-            source: "offline-tiles",
-          },
-        ],
-      },
+      style: "http://localhost:8080/styles/dark/style.json",
       center: center,
       zoom: 15,
     });
@@ -45,7 +29,7 @@ const MapLocationSelector = ({ onSelect, center = [73.8567, 18.5204] }: Props) =
         const { lng, lat } = e.lngLat;
 
         onSelect(lng, lat);
-
+        
         // Remove previous marker
         if (markerRef.current) markerRef.current.remove();
 

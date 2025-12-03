@@ -95,14 +95,11 @@ export default function SimpleMap({ entites }: Props) {
     }, [entites.tracks]);
 
     return (
-        <div className="relative">
+        <div className="relative w-full h-full">
             <MapToolbar />
             <div
                 ref={mapContainer}
-                style={{
-                    width: "100%",
-                    height: "90vh",
-                }}
+                className="w-full h-full"
             />
         </div>
     );
