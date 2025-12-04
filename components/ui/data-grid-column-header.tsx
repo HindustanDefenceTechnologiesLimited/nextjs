@@ -131,8 +131,8 @@ function DataGridColumnHeader<TData, TValue>({
   const headerPin = () => {
     return (
       <Button
-        mode="icon"
-        size="sm"
+        // mode="icon"
+        size="icon-sm"
         variant="ghost"
         className="-me-1 size-7 rounded-md"
         onClick={() => column.pin(false)}

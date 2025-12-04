@@ -9,11 +9,9 @@ import { useSelector } from 'react-redux'
 
 type Props = {
     children: React.ReactNode,
-    params: Promise<{ missionId: string }>
 }
 
-const layout = ({ children, params }: Props) => {
-    const { missionId } = use(params)
+const layout = ({ children }: Props) => {
     useAuthInit(); // Load token from cookies
 
     const router = useRouter();
