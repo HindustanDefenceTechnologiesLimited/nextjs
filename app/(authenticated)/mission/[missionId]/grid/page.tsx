@@ -1,3 +1,4 @@
+'use client'
 import TracksGrid from '@/components/grid/track/tracks-grid'
 import React from 'react'
 

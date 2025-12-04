@@ -54,9 +54,9 @@ function DataGridTableDndHeader<TData>({ header }: { header: Header<TData, unkno
     <DataGridTableHeadRowCell header={header} dndStyle={style} dndRef={setNodeRef}>
       <div className="flex items-center justify-start gap-0.5">
         <Button
-          mode="icon"
-          size="sm"
-          variant="dim"
+          // mode="icon"
+          size="icon-sm"
+          variant="secondary"
           className="-ms-2 size-6"
           {...attributes}
           {...listeners}

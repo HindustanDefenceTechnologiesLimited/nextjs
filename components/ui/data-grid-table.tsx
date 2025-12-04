@@ -21,7 +21,7 @@ const headerCellSpacingVariants = cva('', {
 const bodyCellSpacingVariants = cva('', {
   variants: {
     size: {
-      dense: 'px-2.5 py-2',
+      dense: 'px-2.5 py-1/2',
       default: 'px-4 py-3',
     },
   },
@@ -389,7 +389,7 @@ function DataGridTableRowSelect<TData>({ row, size }: { row: Row<TData>; size?: 
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
-        size={size ?? 'sm'}
+        // size={size ?? 'sm'}
         className="align-[inherit]"
       />
     </>
@@ -405,7 +405,7 @@ function DataGridTableRowSelectAll({ size }: { size?: 'sm' | 'md' | 'lg' }) {
       disabled={isLoading || recordCount === 0}
       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
       aria-label="Select all"
-      size={size}
+      // size={size}
       className="align-[inherit]"
     />
   );

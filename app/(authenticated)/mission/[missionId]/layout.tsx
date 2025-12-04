@@ -50,7 +50,9 @@ const layout = ({ children, params }: Props) => {
             <MissionLeftSidebar />
             <main className='w-full' >
                 <Header/>
-                {children}
+                <div className='max-h-[calc(100vh-2.5em)] overflow-y-auto w-full'>
+                {children} 
+                </div>
             </main>
         </div>
     )

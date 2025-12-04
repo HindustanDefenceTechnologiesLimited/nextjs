@@ -1,7 +1,6 @@
 'use client'
 import { useMemo, useState } from 'react';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardFooter, CardHeader, CardHeading, CardTable, CardToolbar } from '@/components/ui/card';
@@ -19,194 +18,19 @@ import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
 import { ColumnDef, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, Row, SortingState, useReactTable, } from '@tanstack/react-table';
 import { Ellipsis, Filter, Search, UserRoundPlus, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { Track } from '@/lib/types';
+import { useAppDispatch } from '@/store/hook';
+import { setSidebarData, setSidebarType } from '@/store/slices/sidebarSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { se } from 'date-fns/locale';
+;
 
-interface IData {
-    id: string;
-    name: string;
-    availability: 'online' | 'away' | 'busy' | 'offline';
-    avatar: string;
-    status: 'Active' | 'Inactive' | 'Pending' | 'Blocked';
-    flag: string; // Emoji flags
-    email: string;
-    company: string;
-    role: string;
-    joined: string;
-    location: string;
-    balance: number;
-}
 
-const demoData: IData[] = [
-    {
-        id: '1',
-        name: 'Kathryn Campbell',
-        availability: 'online',
-        avatar: '1.png',
-        status: 'Active',
-        flag: '🇺🇸',
-        email: 'kathryn@apple.com',
-        company: 'Apple',
-        role: 'CEO',
-        joined: '2021-04-15',
-        location: 'San Francisco, USA',
-        balance: 5143.03,
-    },
-    {
-        id: '2',
-        name: 'Robert Smith',
-        availability: 'away',
-        avatar: '2.png',
-        status: 'Inactive',
-        flag: '🇬🇧',
-        email: 'robert@openai.com',
-        company: 'OpenAI',
-        role: 'CTO',
-        joined: '2020-07-20',
-        location: 'London, UK',
-        balance: 4321.87,
-    },
-    {
-        id: '3',
-        name: 'Sophia Johnson',
-        availability: 'busy',
-        avatar: '3.png',
-        status: 'Blocked',
-        flag: '🇨🇦',
-        email: 'sophia@meta.com',
-        company: 'Meta',
-        role: 'Designer',
-        joined: '2019-03-12',
-        location: 'Toronto, Canada',
-        balance: 7654.98,
-    },
-    {
-        id: '4',
-        name: 'Lucas Walker',
-        availability: 'offline',
-        avatar: '4.png',
-        status: 'Inactive',
-        flag: '🇦🇺',
-        email: 'lucas@tesla.com',
-        company: 'Tesla',
-        role: 'Developer',
-        joined: '2022-01-18',
-        location: 'Sydney, Australia',
-        balance: 3456.45,
-    },
-    {
-        id: '5',
-        name: 'Emily Davis',
-        availability: 'online',
-        avatar: '5.png',
-        status: 'Active',
-        flag: '🇩🇪',
-        email: 'emily@sap.com',
-        company: 'SAP',
-        role: 'Lawyer',
-        joined: '2023-05-23',
-        location: 'Berlin, Germany',
-        balance: 9876.54,
-    },
-    {
-        id: '6',
-        name: 'James Lee',
-        availability: 'away',
-        avatar: '6.png',
-        status: 'Pending',
-        flag: '🇲🇾',
-        email: 'james@keenthemes.com',
-        company: 'Keenthemes',
-        role: 'Director',
-        joined: '2018-11-30',
-        location: 'Kuala Lumpur, MY',
-        balance: 6214.22,
-    },
-    {
-        id: '7',
-        name: 'Isabella Martinez',
-        availability: 'busy',
-        avatar: '7.png',
-        status: 'Inactive',
-        flag: '🇪🇸',
-        email: 'isabella@bbva.es',
-        company: 'BBVA',
-        role: 'Product Manager',
-        joined: '2021-06-14',
-        location: 'Barcelona, Spain',
-        balance: 5321.77,
-    },
-    {
-        id: '8',
-        name: 'Benjamin Harris',
-        availability: 'offline',
-        avatar: '8.png',
-        status: 'Blocked',
-        flag: '🇯🇵',
-        email: 'benjamin@sony.jp',
-        company: 'Sony',
-        role: 'Marketing Lead',
-        joined: '2020-10-22',
-        location: 'Tokyo, Japan',
-        balance: 8452.39,
-    },
-    {
-        id: '9',
-        name: 'Olivia Brown',
-        availability: 'online',
-        avatar: '9.png',
-        status: 'Pending',
-        flag: '🇫🇷',
-        email: 'olivia@lvmh.fr',
-        company: 'LVMH',
-        role: 'Data Scientist',
-        joined: '2019-09-17',
-        location: 'Paris, France',
-        balance: 7345.1,
-    },
-    {
-        id: '10',
-        name: 'Michael Clark',
-        availability: 'away',
-        avatar: '10.png',
-        status: 'Inactive',
-        flag: '🇮🇹',
-        email: 'michael@eni.it',
-        company: 'ENI',
-        role: 'Engineer',
-        joined: '2023-02-11',
-        location: 'Milan, Italy',
-        balance: 5214.88,
-    },
-    {
-        id: '11',
-        name: 'Ava Wilson',
-        availability: 'busy',
-        avatar: '11.png',
-        status: 'Blocked',
-        flag: '🇧🇷',
-        email: 'ava@vale.br',
-        company: 'Vale',
-        role: 'Software Engineer',
-        joined: '2022-12-01',
-        location: 'Rio de Janeiro, Brazil',
-        balance: 9421.5,
-    },
-    {
-        id: '12',
-        name: 'David Young',
-        availability: 'offline',
-        avatar: '12.png',
-        status: 'Active',
-        flag: '🇮🇳',
-        email: 'david@tata.in',
-        company: 'Tata',
-        role: 'Sales Manager',
-        joined: '2020-03-27',
-        location: 'Mumbai, India',
-        balance: 4521.67,
-    },
-];
 
-function ActionsCell({ row }: { row: Row<IData> }) {
+
+
+function ActionsCell({ row }: { row: Row<Track> }) {
     const { copy } = useCopyToClipboard();
     const handleCopyId = () => {
         copy(row.original.id);
@@ -233,17 +57,19 @@ function ActionsCell({ row }: { row: Row<IData> }) {
     );
 }
 
-export default function DataGridDemo() {
+export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 5,
     });
+    const dispatch = useAppDispatch();
+    const sidebarType = useSelector((state: RootState) => state.sidebar.type);
     const [sorting, setSorting] = useState<SortingState>([{ id: 'name', desc: true }]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 
     const filteredData = useMemo(() => {
-        return demoData.filter((item) => {
+        return tracks.filter((item) => {
             // Filter by status
             const matchesStatus = !selectedStatuses?.length || selectedStatuses.includes(item.status);
 
@@ -258,17 +84,18 @@ export default function DataGridDemo() {
 
             return matchesStatus && matchesSearch;
         });
-    }, [searchQuery, selectedStatuses]);
+    }, [searchQuery, selectedStatuses, tracks]);
 
     const statusCounts = useMemo(() => {
-        return demoData.reduce(
+        if (!tracks.length) return {};
+        return tracks.reduce(
             (acc, item) => {
                 acc[item.status] = (acc[item.status] || 0) + 1;
                 return acc;
             },
             {} as Record<string, number>,
         );
-    }, []);
+    }, [tracks]);
 
     const handleStatusChange = (checked: boolean, value: string) => {
         setSelectedStatuses(
@@ -278,7 +105,7 @@ export default function DataGridDemo() {
         );
     };
 
-    const columns = useMemo<ColumnDef<IData>[]>(
+    const columns = useMemo<ColumnDef<Track>[]>(
         () => [
             {
                 accessorKey: 'id',
@@ -292,15 +119,31 @@ export default function DataGridDemo() {
                     cellClassName: '',
                 },
                 enableResizing: false,
+                
             },
             {
-                accessorKey: 'balance',
-                id: 'balance',
-                header: ({ column }) => <DataGridColumnHeader title="Balance" visibility={true} column={column} />,
+                accessorKey: 'track-id',
+                id: 'name',
+                header: ({ column }) => <DataGridColumnHeader title="Track ID" visibility={true} column={column} />,
+
+                cell: ({ row }) => {
+                    return (
+                            <div className="font-medium text-foreground">{row.original.trackId}</div>
+                    );
+                },
+                size: 250,
+                enableSorting: true,
+                enableHiding: false,
+                enableResizing: true,
+            },
+            {
+                accessorKey: 'threatLevel',
+                id: 'threatLevel',
+                header: ({ column }) => <DataGridColumnHeader title="Threat" visibility={true} column={column} />,
                 cell: ({ row }) => {
                     return (
                         <div className="flex items-center gap-1.5">
-                            <div className="font-medium text-foreground">{row.original.balance}</div>
+                            {row.original.threatLevel}
                         </div>
                     );
                 },
@@ -314,37 +157,13 @@ export default function DataGridDemo() {
                 enableResizing: true,
             },
             {
-                accessorKey: 'name',
-                id: 'name',
-                header: ({ column }) => <DataGridColumnHeader title="User" visibility={true} column={column} />,
-                cell: ({ row }) => {
-                    return (
-                        <div className="flex items-center gap-3">
-                            <Avatar className="size-8">
-                                <AvatarImage src={`/media/avatars/${row.original.avatar}`} alt={row.original.name} />
-                                <AvatarFallback>N</AvatarFallback>
-                            </Avatar>
-                            <div className="space-y-px">
-                                <div className="font-medium text-foreground">{row.original.name}</div>
-                                <div className="text-muted-foreground">{row.original.email}</div>
-                            </div>
-                        </div>
-                    );
-                },
-                size: 250,
-                enableSorting: true,
-                enableHiding: false,
-                enableResizing: true,
-            },
-            {
-                accessorKey: 'location',
-                id: 'location',
-                header: ({ column }) => <DataGridColumnHeader title="Location" visibility={true} column={column} />,
+                accessorKey: 'type',
+                id: 'type',
+                header: ({ column }) => <DataGridColumnHeader title="Type" visibility={true} column={column} />,
                 cell: ({ row }) => {
                     return (
                         <div className="flex items-center gap-1.5">
-                            {row.original.flag}
-                            <div className="font-medium text-foreground">{row.original.location}</div>
+                            <div className="font-medium text-foreground">{row.original.type}</div>
                         </div>
                     );
                 },
@@ -364,28 +183,22 @@ export default function DataGridDemo() {
                 cell: ({ row }) => {
                     const status = row.original.status;
 
-                    if (status == 'Active') {
+                    if (status == 'ACTIVE') {
                         return (
                             <Badge variant="default">
-                                Approved
+                                Active
                             </Badge>
                         );
-                    } else if (status == 'Blocked') {
+                    } else if (status == 'LOST') {
                         return (
                             <Badge variant="destructive" >
-                                Blocked
-                            </Badge>
-                        );
-                    } else if (status == 'Inactive') {
-                        return (
-                            <Badge variant="secondary" >
-                                Inactive
+                                Lost
                             </Badge>
                         );
                     } else {
                         return (
                             <Badge variant="secondary" >
-                                Pending
+                                Terminated
                             </Badge>
                         );
                     }
@@ -412,9 +225,9 @@ export default function DataGridDemo() {
 
     const table = useReactTable({
         columns,
-        data: filteredData,
+        data: filteredData || [],
         pageCount: Math.ceil((filteredData?.length || 0) / pagination.pageSize),
-        getRowId: (row: IData) => row.id,
+        getRowId: (row: Track) => row.id,
         state: {
             pagination,
             sorting,
@@ -434,11 +247,26 @@ export default function DataGridDemo() {
         <DataGrid
             table={table}
             recordCount={filteredData?.length || 0}
+            tableClassNames={{
+                bodyRow: 'max-h-8'
+                
+            }}
+            // TODO: Figure out this sidebar rendering, currently it is patch
+            onRowClick={(row)=>{
+                if(sidebarType == 'track') {
+                    dispatch(setSidebarType(null));
+                    dispatch(setSidebarData(null));
+                }else{
+                    dispatch(setSidebarType('track'));
+                    dispatch(setSidebarData(row));
+                }
+            }}
             tableLayout={{
                 columnsPinnable: true,
                 columnsResizable: true,
                 columnsMovable: true,
                 columnsVisibility: true,
+                dense: true,
             }}
         >
             <Card>
@@ -502,15 +330,10 @@ export default function DataGridDemo() {
                             </Popover>
                         </div>
                     </CardHeading>
-                    <CardToolbar>
-                        <Button>
-                            <UserRoundPlus />
-                            Add new
-                        </Button>
-                    </CardToolbar>
+
                 </CardHeader>
                 <CardTable>
-                    <ScrollArea className='max-h-[70vhv]'>
+                    <ScrollArea className='max-h-[40vh]'>
                         <DataGridTable />
                         <ScrollBar orientation="horizontal" />
                     </ScrollArea>
@@ -522,3 +345,5 @@ export default function DataGridDemo() {
         </DataGrid>
     );
 }
+
+
