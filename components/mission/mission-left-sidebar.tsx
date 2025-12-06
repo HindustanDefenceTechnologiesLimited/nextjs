@@ -101,7 +101,7 @@ const EntityList = () => {
               </div>
             ))}
           </div>
-        <CommandList className='h-[81vh]'>
+        <CommandList className='h-[78vh]'>
           <CommandEmpty>No results found.</CommandEmpty>
           {
             renderEntities.includes('tracks') &&

@@ -21,7 +21,7 @@ type Props = {
     onCreate: (trackPosition: TrackPosition) => void
 }
 
-const NewTrackPosition = ({ track, onCreate}: Props) => {
+const NewTrackPosition = ({ track, onCreate }: Props) => {
     const [form, setForm] = React.useState({
         longitude: 0,
         latitude: 0,
@@ -36,7 +36,7 @@ const NewTrackPosition = ({ track, onCreate}: Props) => {
                 timestamp: form.timestamp,
                 trackId: track.id
             })
-            if(res.data.success) toast.success('Position added successfully!')
+            if (res.data.success) toast.success('Position added successfully!')
             const oldPositions = track.positions || []
             dispatch(updateTrack({ id: track.id, positions: [...oldPositions, res.data.data] }))
             onCreate(res.data.data);
@@ -48,8 +48,9 @@ const NewTrackPosition = ({ track, onCreate}: Props) => {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full">
-                    <PlusIcon className="mr-2 h-4 w-4 " />New Track Position</Button>
+                <Button variant="outline" className="" size='sm'>
+                    <PlusIcon className="h-4 w-4" />Track Pos.
+                </Button>
             </PopoverTrigger>
             <PopoverContent className="w-2xl" side="right">
                 <div className="grid gap-4">

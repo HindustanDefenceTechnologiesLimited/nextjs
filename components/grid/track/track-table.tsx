@@ -24,7 +24,10 @@ import { setSidebarData, setSidebarType } from '@/store/slices/sidebarSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { se } from 'date-fns/locale';
-;
+import { Separator } from '@/components/ui/separator';
+import { PopoverClose } from '@radix-ui/react-popover';
+import { setMapData, setMapType } from '@/store/slices/mapSlice';
+import { usePathname, useRouter } from 'next/navigation';
 
 
 
@@ -58,6 +61,9 @@ function ActionsCell({ row }: { row: Row<Track> }) {
 }
 
 export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
+    const router = useRouter();
+    const pathname = usePathname()
+
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 5,
@@ -119,7 +125,7 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                     cellClassName: '',
                 },
                 enableResizing: false,
-                
+
             },
             {
                 accessorKey: 'track-id',
@@ -128,7 +134,7 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
 
                 cell: ({ row }) => {
                     return (
-                            <div className="font-medium text-foreground">{row.original.trackId}</div>
+                        <div className="font-medium text-foreground">{row.original.trackId}</div>
                     );
                 },
                 size: 250,
@@ -147,7 +153,64 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                         </div>
                     );
                 },
-                size: 200,
+
+                meta: {
+                    headerClassName: '',
+                    cellClassName: 'text-start',
+                },
+                enableSorting: true,
+                enableHiding: true,
+                enableResizing: true,
+            },
+            {
+                accessorKey: 'positions',
+                id: 'positions',
+                header: ({ column }) => <DataGridColumnHeader title="Last Position" visibility={true} column={column} />,
+                cell: ({ row }) => {
+                    const lastPosition = row.original.positions && row.original.positions[0]
+                    const long = lastPosition && lastPosition.longitude;
+                    const lat = lastPosition && lastPosition.latitude;
+                    return (
+                        <div className="flex items-center gap-1.5">
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="ghost" size="sm" aria-label="Open Popover" onClick={(e) => { e.stopPropagation() }}>
+                                        {long && lat && `${long.toFixed(5)}, ${lat.toFixed(5)}`}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent align="end" className="rounded-xl p-0 text-sm">
+                                    <div className="px-4 py-3">
+                                        <div className="text-sm font-medium">Do you want to view this location?</div>
+                                    </div>
+                                    <Separator />
+                                    <div className="p-4 text-sm *:[p:not(:last-child)]:mb-2">
+                                        <PopoverClose onClick={(e)=>{
+                                            e.stopPropagation()
+                                        }}>
+                                        <Button size='sm'
+                                            onClick={(e) => {
+                                                if (lastPosition) {
+                                                    dispatch(setMapType('trackPosition'));
+                                                    dispatch(setMapData(lastPosition));
+                                                }
+                                                const mapRoute = pathname.split('/')                                                
+                                                router.push('/'+ mapRoute[1] + '/' + mapRoute[2])
+                                            }}
+                                        >
+                                            Yes
+                                        </Button>
+                                        </PopoverClose>
+                                        <PopoverClose>
+                                            <Button variant='ghost' size='sm'>No</Button>
+                                        </PopoverClose>
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
+                            {!long && !lat && 'N/A'}
+                        </div>
+                    );
+                },
+
                 meta: {
                     headerClassName: '',
                     cellClassName: 'text-start',
@@ -167,7 +230,26 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                         </div>
                     );
                 },
-                size: 200,
+
+                meta: {
+                    headerClassName: '',
+                    cellClassName: 'text-start',
+                },
+                enableSorting: true,
+                enableHiding: true,
+                enableResizing: true,
+            },
+            {
+                accessorKey: 'classification',
+                id: 'classification',
+                header: ({ column }) => <DataGridColumnHeader title="Sub Type" visibility={true} column={column} />,
+                cell: ({ row }) => {
+                    return (
+                        <div className="flex items-center gap-1.5">
+                            <div className="font-medium text-foreground">{row.original.classification?.subType}</div>
+                        </div>
+                    );
+                },
                 meta: {
                     headerClassName: '',
                     cellClassName: 'text-start',
@@ -185,7 +267,7 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
 
                     if (status == 'ACTIVE') {
                         return (
-                            <Badge variant="default">
+                            <Badge variant="default" className='bg-green-700 text-white'>
                                 Active
                             </Badge>
                         );
@@ -249,14 +331,14 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
             recordCount={filteredData?.length || 0}
             tableClassNames={{
                 bodyRow: 'max-h-8'
-                
+
             }}
             // TODO: Figure out this sidebar rendering, currently it is patch
-            onRowClick={(row)=>{
-                if(sidebarType == 'track') {
+            onRowClick={(row) => {
+                if (sidebarType == 'track') {
                     dispatch(setSidebarType(null));
                     dispatch(setSidebarData(null));
-                }else{
+                } else {
                     dispatch(setSidebarType('track'));
                     dispatch(setSidebarData(row));
                 }

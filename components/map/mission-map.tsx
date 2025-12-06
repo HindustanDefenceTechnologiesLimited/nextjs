@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import SimpleMap from './map-view'
+import SimpleMap from './core/map-view'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
 

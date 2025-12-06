@@ -1,15 +1,19 @@
 // store/slices/missionSlice.ts
-import { Asset, Mission, MissionStatus, Track, TrackPosition } from '@/lib/types';
+import { Asset, AssetPosition, Mission, MissionStatus, Track, TrackPosition } from '@/lib/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { set } from 'date-fns';
 
 
-type MapDataType = Track | TrackPosition | Asset | null;
-type MapType = 'track' | 'trackPosition' | 'asset' | null;
+type MapDataType = Track | TrackPosition | Asset | AssetPosition |  null;
+type MapType = 'track' | 'trackPosition' | 'asset' | 'assetPosition' | null;
+type PositionEntity = TrackPosition | AssetPosition;
+
 
 type MapState = {
     data: MapDataType;
     type: MapType;
+    routeFocusData: PositionEntity[];
+    routeFocusEntity: Track | Asset | null;
     loading: boolean;
     error?: string | null;
 };
@@ -17,6 +21,8 @@ type MapState = {
 const initialState: MapState = {
     data: null,
     type: null,
+    routeFocusData: [],
+    routeFocusEntity: null,
     loading: false,
     error: null,
 };
@@ -25,7 +31,12 @@ const mapSlice = createSlice({
     name: 'map',
     initialState,
     reducers: {
-
+        setRouteFocusData(state, action: PayloadAction<PositionEntity[]>) {
+            state.routeFocusData = action.payload;
+        },
+        setRouteFocusEntity(state, action: PayloadAction<Track | Asset | null>) {
+            state.routeFocusEntity = action.payload;
+        },
         setMapData(state, action: PayloadAction<MapDataType>) {
             state.data = action.payload;
         },
@@ -41,5 +52,5 @@ const mapSlice = createSlice({
     },
 });
 
-export const { setMapData, setMapType, setLoading, setError } = mapSlice.actions;
+export const { setMapData, setMapType, setLoading, setError, setRouteFocusData, setRouteFocusEntity } = mapSlice.actions;
 export default mapSlice.reducer;

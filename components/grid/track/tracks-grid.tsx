@@ -8,8 +8,9 @@ type Props = {}
 
 const TracksGrid = (props: Props) => {
 const mission = useSelector((state: RootState) => state.mission.data);
-  return (
-    <div>
+const map = useSelector((state: RootState) => state.map.data);
+return (
+    <div className='pr-2'>
       <TrackTable tracks={mission.tracks || []}/>
     </div>
   )

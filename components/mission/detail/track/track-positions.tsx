@@ -14,7 +14,7 @@ import {
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { MapPinIcon } from 'lucide-react';
-import { setMapData, setMapType } from '@/store/slices/mapSlice';
+import { setMapData, setMapType, setRouteFocusData, setRouteFocusEntity } from '@/store/slices/mapSlice';
 import NewTrackPosition from './new-track-postion';
 type Props = {
     track: Track
@@ -67,7 +67,15 @@ const TrackPositions = ({ track }: Props) => {
                     </AccordionTrigger>
 
                     <AccordionContent className="max-h-80 overflow-y-auto ">
+                        <div className='flex gap-1 w-full'>
                         <NewTrackPosition track={track} onCreate={(newTrkPos)=>console.log(newTrkPos)} />
+                        <Button size='sm' className='w-1/2' onClick={()=>{
+                           dispatch(setRouteFocusEntity(track))
+                           dispatch(setRouteFocusData(positions))
+                        }}>
+                            Show track route
+                        </Button>
+                        </div>
                         {positions.length === 0 && (
                             <div className="text-muted-foreground text-sm p-2">
                                 No positions available

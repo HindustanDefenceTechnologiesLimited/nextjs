@@ -4,10 +4,9 @@ import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import TrackPopup from "./popup/track-popup";
-import { Track } from "@/lib/types";
-import { style } from "./style";
-import MapToolbar from "./map-toolbar";
+import TrackPopup from "../components/map/popup/track-popup";
+import { Track, TrackPosition } from "@/lib/types";
+import MapToolbar from "../components/map/core/map-toolbar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 type Props = {
@@ -20,6 +19,10 @@ export default function SimpleMap({ entites }: Props) {
     const mapContainer = useRef<HTMLDivElement>(null);
     const mapRef = useRef<maplibregl.Map | null>(null);
     const mission = useSelector((state: RootState) => state.mission.data);
+    const mapFocusType = useSelector((state: RootState) => state.map.type);
+    const mapFocusData = useSelector((state: RootState) => state.map.data);
+    const focusMarkerRef = useRef<maplibregl.Marker | null>(null);
+
     // console.log(mission.mapCoordinates)
     const markersRef = useRef<maplibregl.Marker[]>([]);
     const rootsRef = useRef<any[]>([]);
@@ -30,10 +33,10 @@ export default function SimpleMap({ entites }: Props) {
         const map = new maplibregl.Map({
             container: mapContainer.current,
             style: "http://localhost:8080/styles/dark/style.json",
-
-            center: [73.8567, 18.5204 ],
+            center: [73.8567, 18.5204],
             zoom: 15,
         });
+
         // console.log(map.getCenter())
         mapRef.current = map;
         map.addControl(new maplibregl.NavigationControl(), "top-right");
@@ -54,14 +57,31 @@ export default function SimpleMap({ entites }: Props) {
             mapRef.current = null;
         };
     }, []);
-    // useEffect(() => {
-    //     if (!mapRef.current) return;
-    //     mapRef.current.setCenter([mission.mapCoordinates?.center.lng || 68, mission.mapCoordinates?.center.lat || 18]);
-    //     mapRef.current.setZoom(mission.mapCoordinates?.zoom || 15);
-    // }, [mission.mapCoordinates]);
-    // -------------------------------
-    // RENDER MARKERS WHEN TRACKS CHANGE
-    // -------------------------------
+
+
+    useEffect(() => {
+        if (!mapRef.current) return;
+
+        if (mapFocusType === "trackPosition") {
+            const trackPosition = mapFocusData as TrackPosition;
+
+            if (focusMarkerRef.current) {
+                focusMarkerRef.current.remove();
+                focusMarkerRef.current = null;
+            }
+
+            const marker = new maplibregl.Marker()
+                .setLngLat([trackPosition.longitude, trackPosition.latitude])
+                .addTo(mapRef.current);
+            focusMarkerRef.current = marker;
+
+            mapRef.current.setCenter([
+                trackPosition.longitude,
+                trackPosition.latitude,
+            ]);
+            mapRef.current.setZoom(15);
+        }
+    }, [mapFocusType, mapFocusData]);
     useEffect(() => {
         if (!mapRef.current) return;
 

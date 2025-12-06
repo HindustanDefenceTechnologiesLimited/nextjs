@@ -21,8 +21,8 @@ const TrackPopup = ({track}: Props) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-          <button className="p-2 cursor-pointer">
-            <p className='bg-foreground px-1 rounded text-background'>{track.trackId}</p>
+          <button className="p-2 cursor-pointer relative">
+            <p className='bg-foreground px-1 rounded text-background absolute -top-4 left-4 min-w-30 text-start truncate -z-2'>{track.trackId}</p>
             <IconRenderer icon={track.type} color={track.status === 'ACTIVE' ? 'green-500' : 'red-500'} />
           </button>
       </PopoverTrigger>
