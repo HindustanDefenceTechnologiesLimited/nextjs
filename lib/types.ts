@@ -195,7 +195,7 @@ export interface Classification {
 }
 
 export interface GeoJSONGeometry {
-  type: "Point" | "Polygon" | "Circle" | "LineString";
+  type: "Rectangle" | "Polygon" | "Circle";
   coordinates: number[] | number[][] | number[][][];
 }
 

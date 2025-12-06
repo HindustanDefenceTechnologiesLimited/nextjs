@@ -77,7 +77,7 @@ const EntityList = () => {
   return (
     <div className='overflow-y-auto'>
       <Command className="h-full">
-        <CommandInput placeholder="Type a entity name" />
+          <CommandInput placeholder="Type a entity name" className='flex flex-1'/>
           <div className='flex gap-1 p-2 w-2xl'>
             {renderEntityList.map((item) => (
               <div
@@ -101,7 +101,7 @@ const EntityList = () => {
               </div>
             ))}
           </div>
-        <CommandList className='h-[78vh]'>
+        <CommandList className='h-[77vh]'>
           <CommandEmpty>No results found.</CommandEmpty>
           {
             renderEntities.includes('tracks') &&
