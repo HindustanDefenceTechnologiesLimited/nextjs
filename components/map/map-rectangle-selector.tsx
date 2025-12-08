@@ -149,11 +149,14 @@ const MapRectangleSelector = ({ onSelect, center = [73.8567, 18.5204] }: Props) 
                     // @ts-ignore
                     source.setData(rectangle);
                     setBounds((prev) => ({ ...prev, lng2: lng, lat2: lat }));
+
+                    onSelect(lng1, lat1, lng, lat);
                 }
             });
 
         });
-
+const attri = document.getElementsByClassName('maplibregl-ctrl-attrib')
+        attri[0].remove()
         map.addControl(new maplibregl.NavigationControl(), "top-right");
         map.addControl(new maplibregl.ScaleControl(), "bottom-left");
 
@@ -185,12 +188,12 @@ const MapRectangleSelector = ({ onSelect, center = [73.8567, 18.5204] }: Props) 
                     Lng1: {bounds.lng1}, Lat1: {bounds.lat1} <br />
                     Lng2: {bounds.lng2}, Lat2: {bounds.lat2}
                 </span>
-                <Button size='sm' variant='secondary' className="my-1 mr-1"
+                {/* <Button size='sm' variant='secondary' className="my-1 mr-1"
                     disabled={!bounds.lng1 || !bounds.lat1 || !bounds.lng2 || !bounds.lat2}
                     onClick={() => onSelect(bounds.lng1, bounds.lat1, bounds.lng2, bounds.lat2)}
                 >
                     Done
-                </Button>
+                </Button> */}
             </div>
         </div>
     );

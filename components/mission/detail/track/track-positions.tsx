@@ -71,7 +71,8 @@ const TrackPositions = ({ track }: Props) => {
                         <NewTrackPosition track={track} onCreate={(newTrkPos)=>console.log(newTrkPos)} />
                         <Button size='sm' className='w-1/2' onClick={()=>{
                            dispatch(setRouteFocusEntity(track))
-                           dispatch(setRouteFocusData(positions))
+                           dispatch(setRouteFocusData(currentTrack?.positions || []))
+
                         }}>
                             Show track route
                         </Button>

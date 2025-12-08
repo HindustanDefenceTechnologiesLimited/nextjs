@@ -42,11 +42,13 @@ export default function SimpleMap({ entites }: Props) {
 
         mapRef.current = map;
         setReady(true);
-
+        const attri = document.getElementsByClassName('maplibregl-ctrl-attrib')
+        attri[0].remove()
         return () => {
             map.remove();
             mapRef.current = null;
         };
+        
     }, []);
     useEffect(() => {
         if(!mission.mapCoordinates) return

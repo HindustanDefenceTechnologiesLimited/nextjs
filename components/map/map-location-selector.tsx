@@ -29,7 +29,7 @@ const MapLocationSelector = ({ onSelect, center = [73.8567, 18.5204] }: Props) =
         const { lng, lat } = e.lngLat;
 
         onSelect(lng, lat);
-        
+
         // Remove previous marker
         if (markerRef.current) markerRef.current.remove();
 
@@ -47,7 +47,8 @@ const MapLocationSelector = ({ onSelect, center = [73.8567, 18.5204] }: Props) =
       new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }),
       "bottom-left"
     );
-
+    const attri = document.getElementsByClassName('maplibregl-ctrl-attrib')
+    attri[0].remove()
     return () => {
       if (markerRef.current) markerRef.current.remove();
       if (mapRef.current) mapRef.current.remove();

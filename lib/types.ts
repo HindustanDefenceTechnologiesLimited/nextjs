@@ -195,8 +195,12 @@ export interface Classification {
 }
 
 export interface GeoJSONGeometry {
-  type: "Rectangle" | "Polygon" | "Circle";
-  coordinates: number[] | number[][] | number[][][];
+  shapeType: 'rectangle' | 'circle';
+  coordinates: number[][];
+  radius?: number;
+  altitude?: number;
+  attributes?: Record<string, any>;
+
 }
 
 // ===================================

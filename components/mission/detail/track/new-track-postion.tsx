@@ -38,7 +38,7 @@ const NewTrackPosition = ({ track, onCreate }: Props) => {
             })
             if (res.data.success) toast.success('Position added successfully!')
             const oldPositions = track.positions || []
-            dispatch(updateTrack({ id: track.id, positions: [...oldPositions, res.data.data] }))
+            dispatch(updateTrack({ id: track.id, positions: [res.data.data, ...oldPositions ] }))
             onCreate(res.data.data);
             console.log(res.data.data)
         } catch (error) {

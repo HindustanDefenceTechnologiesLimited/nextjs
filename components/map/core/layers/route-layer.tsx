@@ -13,71 +13,58 @@ export default function RouteLayer() {
     (state: RootState) => state.map.routeFocusEntity
   );
 
-  useEffect(() => {
-    if (!positions || positions.length < 2 || !positionEntity) return;
+useEffect(() => {
+  if (!map || !positions || positions.length < 2 || !positionEntity) return;
 
-    const sourceId = `route-${positionEntity.id}-source`;
-    const lineLayerId = `route-${positionEntity.id}-line`;
-    const arrowLayerId = `route-${positionEntity.id}-arrows`;
-    const pointLayerId = `route-${positionEntity.id}-points`;
+  const sourceId = `route-${positionEntity.id}-source`;
+  const lineLayerId = `route-${positionEntity.id}-line`;
+  const arrowLayerId = `route-${positionEntity.id}-arrows`;
+  const pointLayerId = `route-${positionEntity.id}-points`;
 
-    const geojson: GeoJSON.FeatureCollection = {
-      type: "FeatureCollection",
-      features: [
-        // ✅ Route line
-        {
-          type: "Feature",
-          geometry: {
-            type: "LineString",
-            coordinates: positions.map((p) => [
-              p.longitude,
-              p.latitude,
-            ]),
-          },
-          properties: {},
+  const geojson: GeoJSON.FeatureCollection = {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry: {
+          type: "LineString",
+          coordinates: positions.map(p => [p.longitude, p.latitude]),
         },
-
-        // ✅ Start point
-        {
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: [
-              positions[0].longitude,
-              positions[0].latitude,
-            ],
-          },
-          properties: { kind: "start" },
+        properties: {},
+      },
+      {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [positions[0].longitude, positions[0].latitude],
         },
-
-        // ✅ End point
-        {
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: [
-              positions[positions.length - 1].longitude,
-              positions[positions.length - 1].latitude,
-            ],
-          },
-          properties: { kind: "end" },
+        properties: { kind: "start" },
+      },
+      {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [
+            positions[positions.length - 1].longitude,
+            positions[positions.length - 1].latitude,
+          ],
         },
-      ],
-    };
+        properties: { kind: "end" },
+      },
+    ],
+  };
 
-    // ✅ Update existing source
-    if (map.getSource(sourceId)) {
-      (map.getSource(sourceId) as GeoJSONSource).setData(geojson);
+  const addLayers = () => {
+    if (!map || map.getSource(sourceId)) {
+      (map.getSource(sourceId) as GeoJSONSource | undefined)?.setData(geojson);
       return;
     }
 
-    // ✅ Add source
     map.addSource(sourceId, {
       type: "geojson",
       data: geojson,
     });
 
-    // ✅ LINE LAYER
     map.addLayer({
       id: lineLayerId,
       type: "line",
@@ -88,13 +75,12 @@ export default function RouteLayer() {
         "line-join": "round",
       },
       paint: {
-        "line-color": "#ffffff",
+        "line-color": "#fff",
         "line-width": 4,
         "line-opacity": 0.9,
       },
     });
 
-    // ✅ ARROW LAYER
     map.addLayer({
       id: arrowLayerId,
       type: "symbol",
@@ -114,7 +100,6 @@ export default function RouteLayer() {
       },
     });
 
-    // ✅ START / END POINTS
     map.addLayer({
       id: pointLayerId,
       type: "circle",
@@ -143,14 +128,25 @@ export default function RouteLayer() {
         "circle-stroke-color": "#ffffff",
       },
     });
+  };
 
-    return () => {
-      if (map.getLayer(pointLayerId)) map.removeLayer(pointLayerId);
-      if (map.getLayer(arrowLayerId)) map.removeLayer(arrowLayerId);
-      if (map.getLayer(lineLayerId)) map.removeLayer(lineLayerId);
-      if (map.getSource(sourceId)) map.removeSource(sourceId);
-    };
-  }, [map, positions, positionEntity]);
+  if (map.isStyleLoaded()) {
+    addLayers();
+  } else {
+    map.once("style.load", addLayers);
+  }
+
+  return () => {
+    if (!map || !map.isStyleLoaded()) return;
+
+    [pointLayerId, arrowLayerId, lineLayerId].forEach(id => {
+      if (map.getLayer(id)) map.removeLayer(id);
+    });
+
+    if (map.getSource(sourceId)) map.removeSource(sourceId);
+  };
+}, [map, positions, positionEntity]);
+
 
   return null;
 }
