@@ -79,37 +79,9 @@ export enum ObjectiveType {
   SURVEILLANCE = "SURVEILLANCE",
 }
 
-export enum TrackType {
-  PERSON = "PERSON",
-  VEHICLE = "VEHICLE",
-  AIRCRAFT = "AIRCRAFT",
-  VESSEL = "VESSEL",
-  DRONE = "DRONE",
-  ANIMAL = "ANIMAL",
-  UNKNOWN = "UNKNOWN",
-}
 
-export enum TrackStatus {
-  ACTIVE = "ACTIVE",
-  LOST = "LOST",
-  TERMINATED = "TERMINATED",
-}
 
-export enum ThreatLevel {
-  NONE = "NONE",
-  LOW = "LOW",
-  MEDIUM = "MEDIUM",
-  HIGH = "HIGH",
-  CRITICAL = "CRITICAL",
-}
 
-export enum GeofenceType {
-  INCLUSION = "INCLUSION",
-  EXCLUSION = "EXCLUSION",
-  ALERT_ZONE = "ALERT_ZONE",
-  RESTRICTED_AREA = "RESTRICTED_AREA",
-  SAFE_ZONE = "SAFE_ZONE",
-}
 
 export enum AlertType {
   GEOFENCE_VIOLATION = "GEOFENCE_VIOLATION",
@@ -194,15 +166,7 @@ export interface Classification {
   attributes?: Record<string, any>;
 }
 
-export interface GeoJSONGeometry {
-  shapeType: 'rectangle' | 'circle';
-  coordinates: number[][];
-  center?: Coordinates;
-  radius?: number;
-  altitude?: number;
-  attributes?: Record<string, any>;
 
-}
 
 // ===================================
 // MAIN INTERFACES
@@ -339,6 +303,42 @@ export interface ObjectiveAllocation {
   asset?: Asset;
 }
 
+export enum TrackType {
+  PERSON = "PERSON",
+  VEHICLE = "VEHICLE",
+  AIRCRAFT = "AIRCRAFT",
+  VESSEL = "VESSEL",
+  DRONE = "DRONE",
+  ANIMAL = "ANIMAL",
+  UNKNOWN = "UNKNOWN",
+}
+
+export enum TrackStatus {
+  ACTIVE = "ACTIVE",
+  LOST = "LOST",
+  TERMINATED = "TERMINATED",
+}
+
+export enum ThreatLevel {
+  NONE = "NONE",
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+  CRITICAL = "CRITICAL",
+}
+
+export interface Classification {
+  size?: string; // 0.0 - 1.0
+  subType?: string;
+  color?: string;
+  attributes?: Record<string, any>;
+}
+export interface Velocity {
+  speed: number; // km/h
+  heading: number; // degrees (0-360)
+  altitude?: number; // meters
+}
+
 export interface Track {
   id: string;
   trackId: string; // Unique global identifier
@@ -400,6 +400,24 @@ export interface Detection {
   // Relations (optional for queries)
   sensor?: Sensor;
   track?: Track;
+}
+
+export enum GeofenceType {
+  INCLUSION = "INCLUSION",
+  EXCLUSION = "EXCLUSION",
+  ALERT_ZONE = "ALERT_ZONE",
+  RESTRICTED_AREA = "RESTRICTED_AREA",
+  SAFE_ZONE = "SAFE_ZONE",
+}
+
+export interface GeoJSONGeometry {
+  shapeType: 'rectangle' | 'circle';
+  coordinates: number[][];
+  center?: Coordinates;
+  radius?: number;
+  altitude?: number;
+  attributes?: Record<string, any>;
+
 }
 
 export interface Geofence {

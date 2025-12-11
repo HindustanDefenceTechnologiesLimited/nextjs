@@ -36,8 +36,9 @@ export default function TrackMarkerLayer({ tracks }: Props) {
       const marker = new maplibregl.Marker({
         element: container,
         anchor: "center",
-        rotation: pos.heading,
+        // rotation: pos.heading,
         rotationAlignment: "map",
+        pitchAlignment: "viewport",
       })
         .setLngLat([pos.longitude, pos.latitude])
         .addTo(map);

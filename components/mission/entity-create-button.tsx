@@ -15,7 +15,7 @@ type Props = {}
 const EntityCreateButton = (props: Props) => {
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
                 <Button size='icon-sm' variant='secondary' className='ml-auto'>
                     <PlusIcon />
                 </Button>

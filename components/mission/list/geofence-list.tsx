@@ -14,7 +14,6 @@ type Props = {
 
 const GeofenceList = ({ geofences = [] }: Props) => {
     const dispatch = useAppDispatch();
-    console.log(geofences);
     return (
         <div>
             {geofences.map((geofence) => (

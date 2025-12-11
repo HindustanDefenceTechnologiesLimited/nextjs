@@ -174,8 +174,9 @@ export default function GeofenceShapeLayer({ geofences }: Props) {
       const marker = new maplibregl.Marker({
         element: el,
         anchor: "center",
-        rotation: 0,
+        // rotation: 0,
         rotationAlignment: "map",
+        pitchAlignment: "viewport",
       })
         .setLngLat(topLeft)
         .addTo(map);
