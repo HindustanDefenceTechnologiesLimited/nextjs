@@ -94,29 +94,19 @@ export default function GeofenceShapeLayer({ geofences }: Props) {
     if (!map) return;
 
     if (!map.isStyleLoaded()) {
-      const handler = () => {
-        initLayer();
-      };
-      map.on("load", handler);
+      const handler = () => initLayer();
+      map.once("load", handler);
       return () => map.off("load", handler);
     }
 
+    // Map is already loaded → init immediately
+    initLayer();
+
     return () => {
-      markerRefs.current.forEach((m) => m.remove());
-      markerRefs.current = [];
-
-      geofences.forEach((g) => {
-        queueMicrotask(() => {
-          const layerId = `geofence-layer-${g.id}`;
-          const sourceId = `geofence-source-${g.id}`;
-
-          if (map.getLayer(`${layerId}-outline`)) map.removeLayer(`${layerId}-outline`);
-          if (map.getLayer(layerId)) map.removeLayer(layerId);
-          if (map.getSource(sourceId)) map.removeSource(sourceId);
-        });
-      });
+      queueMicrotask(() => cleanupLayers());
     };
   }, [map, geofences]);
+  
   function initLayer() {
     // Cleanup old markers
     markerRefs.current.forEach((m) => m.remove());
@@ -181,19 +171,25 @@ export default function GeofenceShapeLayer({ geofences }: Props) {
         paint: {
           "line-color": GEOFENCE_COLORS[g.type] ?? "#3b82f6",
           "line-width": 1,
-          "line-dasharray": (g.type === 'RESTRICTED_AREA' || g.type === 'ALERT_ZONE') ? [5, 8] : [1, 0],
+          "line-dasharray":
+            g.type === "RESTRICTED_AREA" || g.type === "ALERT_ZONE"
+              ? [5, 8]
+              : [1, 0],
         },
       });
-
 
       const topLeft = getTopLeftCoordinate(geometry);
 
       const el = document.createElement("div");
       el.style.width = "auto";
       el.style.height = "auto";
-      el.style.transform = "translate(100%, -100%)"
+      el.style.transform = "translate(100%, -100%)";
       const root = createRoot(el);
-      root.render(<ReduxProvider><GeofencePopup geofence={g} /></ReduxProvider>);
+      root.render(
+        <ReduxProvider>
+          <GeofencePopup geofence={g} />
+        </ReduxProvider>
+      );
 
       const marker = new maplibregl.Marker({
         element: el,
@@ -206,6 +202,21 @@ export default function GeofenceShapeLayer({ geofences }: Props) {
         .addTo(map);
 
       markerRefs.current.push(marker);
+    });
+  }
+
+  function cleanupLayers() {
+    markerRefs.current.forEach((m) => m.remove());
+    markerRefs.current = [];
+
+    geofences.forEach((g) => {
+      const layerId = `geofence-layer-${g.id}`;
+      const sourceId = `geofence-source-${g.id}`;
+
+      if (map.getLayer(`${layerId}-outline`))
+        map.removeLayer(`${layerId}-outline`);
+      if (map.getLayer(layerId)) map.removeLayer(layerId);
+      if (map.getSource(sourceId)) map.removeSource(sourceId);
     });
   }
   return null;

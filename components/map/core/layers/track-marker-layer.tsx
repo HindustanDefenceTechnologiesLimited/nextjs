@@ -18,26 +18,46 @@ export default function TrackMarkerLayer({ tracks }: Props) {
 
   useEffect(() => {
     if (!map) return;
-    // cleanup
-    rootsRef.current.forEach((r) => r.unmount());
-    rootsRef.current = [];
 
-    markersRef.current.forEach((m) => m.remove());
-    markersRef.current = [];
+    const run = () => {
+      cleanup();
+      init();
+    };
 
+    // If style is not loaded, wait for it
+    if (!map.isStyleLoaded()) {
+      map.once("load", run);
+      return () => map.off("load", run);
+    }
+
+    // Style already loaded → run immediately
+    run();
+
+    return () => {
+      queueMicrotask(() => cleanup());
+    };
+  }, [tracks, map]);
+
+  /* -------------------------
+     Initialize markers
+  -------------------------- */
+  function init() {
     tracks.forEach((track) => {
       if (!track.positions?.length) return;
 
       const container = document.createElement("div");
       const root = createRoot(container);
-      root.render(<ReduxProvider><TrackPopup track={track} /></ReduxProvider>);
+      root.render(
+        <ReduxProvider>
+          <TrackPopup track={track} />
+        </ReduxProvider>
+      );
 
       const pos = track.positions[0];
 
       const marker = new maplibregl.Marker({
         element: container,
         anchor: "center",
-        // rotation: pos.heading,
         rotationAlignment: "map",
         pitchAlignment: "viewport",
       })
@@ -47,16 +67,22 @@ export default function TrackMarkerLayer({ tracks }: Props) {
       rootsRef.current.push(root);
       markersRef.current.push(marker);
     });
+  }
 
-    return () => {
-      queueMicrotask(() => {
-        rootsRef.current.forEach((r) => r.unmount());
-        markersRef.current.forEach((m) => m.remove());
-        rootsRef.current = [];
-        markersRef.current = [];
-      });
-    };
-  }, [tracks, map]);
+  /* -------------------------
+     Cleanup markers + roots
+  -------------------------- */
+  function cleanup() {
+    try {
+      rootsRef.current.forEach((r) => r.unmount());
+      markersRef.current.forEach((m) => m.remove());
+    } catch (e) {
+      // ignore cleanup errors when map is already destroyed
+    }
+
+    rootsRef.current = [];
+    markersRef.current = [];
+  }
 
   return null;
 }
