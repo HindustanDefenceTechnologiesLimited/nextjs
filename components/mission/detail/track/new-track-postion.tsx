@@ -1,4 +1,4 @@
-import MapLocationSelector from "@/components/map/map-location-selector"
+import MapLocationSelector from "@/components/map/components/map-location-selector"
 import { Button } from "@/components/ui/button"
 import DateTimePicker from "@/components/ui/date-time-picker"
 import { Input } from "@/components/ui/input"

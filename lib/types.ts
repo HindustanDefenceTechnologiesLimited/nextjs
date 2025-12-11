@@ -197,6 +197,7 @@ export interface Classification {
 export interface GeoJSONGeometry {
   shapeType: 'rectangle' | 'circle';
   coordinates: number[][];
+  center?: Coordinates;
   radius?: number;
   altitude?: number;
   attributes?: Record<string, any>;

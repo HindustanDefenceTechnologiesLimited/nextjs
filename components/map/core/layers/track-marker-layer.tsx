@@ -16,6 +16,7 @@ export default function TrackMarkerLayer({ tracks }: Props) {
   const rootsRef = useRef<any[]>([]);
 
   useEffect(() => {
+        if (!map) return;
     // cleanup
     rootsRef.current.forEach((r) => r.unmount());
     rootsRef.current = [];

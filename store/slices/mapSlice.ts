@@ -1,15 +1,16 @@
 // store/slices/missionSlice.ts
-import { Asset, AssetPosition, Mission, MissionStatus, Track, TrackPosition } from '@/lib/types';
+import { Asset, AssetPosition, Geofence, Mission, MissionStatus, Track, TrackPosition } from '@/lib/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { set } from 'date-fns';
 
 
-type MapDataType = Track | TrackPosition | Asset | AssetPosition |  null;
-type MapType = 'track' | 'trackPosition' | 'asset' | 'assetPosition' | null;
+type MapDataType = Track | TrackPosition | Asset | AssetPosition | Geofence | null;
+type MapType = 'track' | 'trackPosition' | 'asset' | 'assetPosition' | 'geofence' | null;
 type PositionEntity = TrackPosition | AssetPosition;
 
 
 type MapState = {
+    ref: maplibregl.Map | null,
     data: MapDataType;
     type: MapType;
     routeFocusData: PositionEntity[];
@@ -19,6 +20,7 @@ type MapState = {
 };
 
 const initialState: MapState = {
+    ref: null,
     data: null,
     type: null,
     routeFocusData: [],

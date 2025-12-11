@@ -12,7 +12,8 @@ const MissionMap = (props: Props) => {
         <div className='w-full h-[95vh] pr-2'>
             <SimpleMap
                 entites={{
-                    tracks: mission.tracks || []
+                    tracks: mission.tracks || [],
+                    geofences: mission.geofences || []
                 }}
             />
         </div>

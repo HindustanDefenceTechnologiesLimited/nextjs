@@ -24,7 +24,7 @@ const TrackList = ({ tracks = [] }: Props) => {
                     }}
                 >
                     <div className={cn('h-4 w-1 rounded ', color(track.status))} />
-                    {renderIcon(track)}
+                    {renderIcon(track,'4')}
                     {(track.trackId).split('-').map((id) => id.charAt(0).toUpperCase() + id.slice(1)).join(' ')}
                     <span className='ml-auto'>
                         {threat(track.threatLevel)}
@@ -37,21 +37,21 @@ const TrackList = ({ tracks = [] }: Props) => {
 
 export default TrackList
 
-export const renderIcon = (track: Track) => {
+export const renderIcon = (track: Track, size?: string) => {
     if (track.type === 'PERSON') {
-        return <UserIcon className=" h-4 w-4" />;
+        return <UserIcon className={`aspect-square h-${size}`} />;
     } else if (track.type === 'VEHICLE') {
-        return <CarIcon className=" h-4 w-4" />
+        return <CarIcon className={`aspect-square h-${size}`} />
     } else if (track.type === 'ANIMAL') {
-        return <DogIcon className=" h-4 w-4" />
+        return <DogIcon className={`aspect-square h-${size}`} />
     } else if (track.type === 'UNKNOWN') {
-        return <ShieldQuestionMark className=" h-4 w-4" />
+        return <ShieldQuestionMark className={`aspect-square h-${size}`} />
     } else if (track.type === 'AIRCRAFT') {
-        return <PlaneIcon className=" h-4 w-4" />
+        return <PlaneIcon className={`aspect-square h-${size}`} />
     } else if (track.type === 'VESSEL') {
-        return <ShipIcon className=" h-4 w-4" />
+        return <ShipIcon className={`aspect-square h-${size}`} />
     } else if (track.type === 'DRONE') {
-        return <DroneIcon className=" h-4 w-4" />
+        return <DroneIcon className={`aspect-square h-${size}`} />
     }
 }
 const color = (status: string) => {

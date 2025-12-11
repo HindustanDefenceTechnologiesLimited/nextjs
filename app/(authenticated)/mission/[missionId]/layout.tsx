@@ -30,6 +30,7 @@ const layout = ({ children, params }: Props) => {
                         'assets': true,
                         'alerts': true,
                         'sensors': true,
+                        'geofences': true,
                         'tracks': true
                     }
                 );

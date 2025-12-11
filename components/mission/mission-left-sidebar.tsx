@@ -25,6 +25,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Label } from '../ui/label';
 import { Checkbox } from '../ui/checkbox';
+import GeofenceList from './list/geofence-list';
 type Props = {}
 
 const MissionLeftSidebar = (props: Props) => {
@@ -104,18 +105,20 @@ const EntityList = () => {
         <CommandList className='h-[77vh]'>
           <CommandEmpty>No results found.</CommandEmpty>
           {
+            renderEntities.includes('geofences') &&
+            <CommandGroup heading={"Geofences (" + mission.geofences?.length + ")"}>
+              <GeofenceList geofences={mission.geofences ? mission.geofences : []} />
+            </CommandGroup>
+          }
+          <CommandSeparator />
+          {
             renderEntities.includes('tracks') &&
             <CommandGroup heading={"Tracks (" + mission.tracks?.length + ")"}>
               <TrackList tracks={mission.tracks ? mission.tracks : []} />
             </CommandGroup>
           }
           <CommandSeparator />
-          {
-            renderEntities.includes('geofences') &&
-            <CommandGroup heading={"Geofences (" + mission.geofences?.length + ")"}>
-            </CommandGroup>
-          }
-          <CommandSeparator />
+          
           {
             renderEntities.includes('assets') &&
             <CommandGroup heading={"Assets (" + mission.assets?.length + ")"}>

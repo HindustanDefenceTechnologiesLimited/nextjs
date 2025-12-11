@@ -3,42 +3,94 @@ import maplibregl from "maplibre-gl";
 import { useMap } from "../map-context";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { TrackPosition } from "@/lib/types";
+import { Geofence, TrackPosition } from "@/lib/types";
+
+/* -------------------------------------------------------
+   Helpers
+------------------------------------------------------- */
+
+type FocusResult = {
+  lng: number;
+  lat: number;
+} | null;
+
+function resolveFocusCenter(
+  type: RootState["map"]["type"],
+  data: RootState["map"]["data"]
+): FocusResult {
+  if (!type || !data) return null;
+
+  switch (type) {
+    case "trackPosition": {
+      const pos = data as TrackPosition;
+      return {
+        lng: pos.longitude,
+        lat: pos.latitude,
+      };
+    }
+
+    case "geofence": {
+      const fence = data as Geofence;
+      return {
+        lng: fence.geometry.center?.lng || 0,
+        lat: fence.geometry.center?.lat || 0,
+      };
+    }
+
+    case "asset": {
+      const asset = data as {
+        location?: { lng: number; lat: number };
+      };
+
+      if (!asset.location) return null;
+
+      return {
+        lng: asset.location.lng,
+        lat: asset.location.lat,
+      };
+    }
+
+    default:
+      return null;
+  }
+}
+
+/* -------------------------------------------------------
+   Component
+------------------------------------------------------- */
 
 export default function FocusMarkerLayer() {
   const map = useMap();
-  const focusMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const markerRef = useRef<maplibregl.Marker | null>(null);
 
-  const mapFocusType = useSelector((state: RootState) => state.map.type);
-  const mapFocusData = useSelector((state: RootState) => state.map.data);
+  const focusType = useSelector((state: RootState) => state.map.type);
+  const focusData = useSelector((state: RootState) => state.map.data);
 
   useEffect(() => {
-    if (mapFocusType !== "trackPosition") return;
+    if (!map) return;
+    const center = resolveFocusCenter(focusType, focusData);
+    if (!center) return;
 
-    const pos = mapFocusData as TrackPosition;
+    // Remove old marker
+    markerRef.current?.remove();
 
-    if (focusMarkerRef.current) {
-      focusMarkerRef.current.remove();
-      focusMarkerRef.current = null;
-    }
-
-    const marker = new maplibregl.Marker()
-      .setLngLat([pos.longitude, pos.latitude])
+    // Create new marker
+    markerRef.current = new maplibregl.Marker()
+      .setLngLat([center.lng, center.lat])
       .addTo(map);
 
-    focusMarkerRef.current = marker;
-
+    // Smooth focus movement
     map.easeTo({
-      center: [pos.longitude, pos.latitude],
+      center: [center.lng, center.lat],
       zoom: 15,
       duration: 800,
     });
-  }, [mapFocusType, mapFocusData, map]);
+  }, [map, focusType, focusData]);
 
   useEffect(() => {
     return () => {
-      focusMarkerRef.current?.remove();
-      focusMarkerRef.current = null;
+      markerRef.current?.remove();
+      markerRef.current = null;
     };
   }, [map]);
 

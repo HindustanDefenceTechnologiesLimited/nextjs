@@ -7,14 +7,17 @@ import { MapContext } from "./map-context";
 import FocusMarkerLayer from "./layers/focus-marker-layer";
 import TrackMarkerLayer from "./layers/track-marker-layer";
 import MapToolbar from "./map-toolbar";
-import { Track } from "@/lib/types";
+import { Geofence, Track } from "@/lib/types";
 import RouteLayer from "./layers/route-layer";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import GeofenceShapeLayer from "./layers/geofence-shape-layer";
+import { dark_style } from "./style";
 
 type Props = {
     entites: {
         tracks: Track[];
+        geofences: Geofence[];
     };
 };
 
@@ -29,7 +32,8 @@ export default function SimpleMap({ entites }: Props) {
 
         const map = new maplibregl.Map({
             container: mapContainerRef.current,
-            style: "http://localhost:8080/styles/dark/style.json",
+            // @ts-ignore
+            style: dark_style,
             center: [73.8567, 18.5204],
             zoom: 15,
         });
@@ -48,10 +52,10 @@ export default function SimpleMap({ entites }: Props) {
             map.remove();
             mapRef.current = null;
         };
-        
+
     }, []);
     useEffect(() => {
-        if(!mission.mapCoordinates) return
+        if (!mission.mapCoordinates) return
         mapRef.current?.easeTo({ center: [mission.mapCoordinates?.center.lng, mission.mapCoordinates?.center.lat], zoom: 15 })
     }, [mission.mapCoordinates])
     return (
@@ -63,11 +67,11 @@ export default function SimpleMap({ entites }: Props) {
             {/* ✅ layers render only after map is ready */}
             {ready && (
                 <MapContext.Provider value={mapRef.current!}>
-            <MapToolbar />
-
-                    <RouteLayer/>
+                    <RouteLayer />
+                    <MapToolbar />
                     <FocusMarkerLayer />
                     <TrackMarkerLayer tracks={entites.tracks} />
+                    <GeofenceShapeLayer geofences={entites.geofences}/>
                 </MapContext.Provider>
             )}
         </div>
