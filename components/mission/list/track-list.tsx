@@ -18,13 +18,13 @@ const TrackList = ({ tracks = [] }: Props) => {
         <div>
             {tracks.map((track) => (
                 <CommandItem key={track.id}
-                    onDoubleClick={() => {
+                    onSelect={(e) => {
                         dispatch(setSidebarType('track'))
                         dispatch(setSidebarData(track))
                     }}
                 >
                     <div className={cn('h-4 w-1 rounded ', color(track.status))} />
-                    {renderIcon(track,'4')}
+                    {renderIcon(track, '4')}
                     {(track.trackId).split('-').map((id) => id.charAt(0).toUpperCase() + id.slice(1)).join(' ')}
                     <span className='ml-auto'>
                         {threat(track.threatLevel)}

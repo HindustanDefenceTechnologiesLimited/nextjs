@@ -36,7 +36,7 @@ const MissionLeftSidebar = (props: Props) => {
   if (sidebarType == null) {
     return (
       <Layout>
-        <MissionDetailSidebar mission={mission} />
+        <MissionDetailSidebar />
         <Separator />
         <EntityList />
       </Layout>

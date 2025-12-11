@@ -4,6 +4,7 @@ import maplibregl from "maplibre-gl";
 import { Track } from "@/lib/types";
 import { useMap } from "../map-context";
 import TrackPopup from "../../popup/track-popup";
+import ReduxProvider from "@/components/provider/redux-provider";
 
 type Props = {
   tracks: Track[];
@@ -16,7 +17,7 @@ export default function TrackMarkerLayer({ tracks }: Props) {
   const rootsRef = useRef<any[]>([]);
 
   useEffect(() => {
-        if (!map) return;
+    if (!map) return;
     // cleanup
     rootsRef.current.forEach((r) => r.unmount());
     rootsRef.current = [];
@@ -29,7 +30,7 @@ export default function TrackMarkerLayer({ tracks }: Props) {
 
       const container = document.createElement("div");
       const root = createRoot(container);
-      root.render(<TrackPopup track={track} />);
+      root.render(<ReduxProvider><TrackPopup track={track} /></ReduxProvider>);
 
       const pos = track.positions[0];
 
@@ -48,10 +49,12 @@ export default function TrackMarkerLayer({ tracks }: Props) {
     });
 
     return () => {
-      rootsRef.current.forEach((r) => r.unmount());
-      markersRef.current.forEach((m) => m.remove());
-      rootsRef.current = [];
-      markersRef.current = [];
+      queueMicrotask(() => {
+        rootsRef.current.forEach((r) => r.unmount());
+        markersRef.current.forEach((m) => m.remove());
+        rootsRef.current = [];
+        markersRef.current = [];
+      });
     };
   }, [tracks, map]);
 

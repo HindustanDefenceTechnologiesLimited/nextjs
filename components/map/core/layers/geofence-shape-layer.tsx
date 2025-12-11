@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client";
 
 // Your external component
 import GeofencePopup from "../../popup/geofence-popup";
+import ReduxProvider from "@/components/provider/redux-provider";
 
 const GEOFENCE_COLORS = {
   SAFE_ZONE: "#22c55e",
@@ -92,6 +93,31 @@ export default function GeofenceShapeLayer({ geofences }: Props) {
   useEffect(() => {
     if (!map) return;
 
+    if (!map.isStyleLoaded()) {
+      const handler = () => {
+        initLayer();
+      };
+      map.on("load", handler);
+      return () => map.off("load", handler);
+    }
+
+    return () => {
+      markerRefs.current.forEach((m) => m.remove());
+      markerRefs.current = [];
+
+      geofences.forEach((g) => {
+        queueMicrotask(() => {
+          const layerId = `geofence-layer-${g.id}`;
+          const sourceId = `geofence-source-${g.id}`;
+
+          if (map.getLayer(`${layerId}-outline`)) map.removeLayer(`${layerId}-outline`);
+          if (map.getLayer(layerId)) map.removeLayer(layerId);
+          if (map.getSource(sourceId)) map.removeSource(sourceId);
+        });
+      });
+    };
+  }, [map, geofences]);
+  function initLayer() {
     // Cleanup old markers
     markerRefs.current.forEach((m) => m.remove());
     markerRefs.current = [];
@@ -159,9 +185,7 @@ export default function GeofenceShapeLayer({ geofences }: Props) {
         },
       });
 
-      /* -------------------------------------------------------
-         ADD REACT COMPONENT MARKER AT TOP-LEFT
-      ------------------------------------------------------- */
+
       const topLeft = getTopLeftCoordinate(geometry);
 
       const el = document.createElement("div");
@@ -169,7 +193,7 @@ export default function GeofenceShapeLayer({ geofences }: Props) {
       el.style.height = "auto";
       el.style.transform = "translate(100%, -100%)"
       const root = createRoot(el);
-      root.render(<GeofencePopup geofence={g} />);
+      root.render(<ReduxProvider><GeofencePopup geofence={g} /></ReduxProvider>);
 
       const marker = new maplibregl.Marker({
         element: el,
@@ -183,22 +207,6 @@ export default function GeofenceShapeLayer({ geofences }: Props) {
 
       markerRefs.current.push(marker);
     });
-
-    return () => {
-      markerRefs.current.forEach((m) => m.remove());
-      markerRefs.current = [];
-
-      geofences.forEach((g) => {
-        const layerId = `geofence-layer-${g.id}`;
-        const sourceId = `geofence-source-${g.id}`;
-
-        if (map.getLayer(`${layerId}-outline`))
-          map.removeLayer(`${layerId}-outline`);
-        if (map.getLayer(layerId)) map.removeLayer(layerId);
-        if (map.getSource(sourceId)) map.removeSource(sourceId);
-      });
-    };
-  }, [map, geofences]);
-
+  }
   return null;
 }

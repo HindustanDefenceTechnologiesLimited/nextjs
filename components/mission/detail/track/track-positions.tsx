@@ -30,28 +30,28 @@ const TrackPositions = ({ track }: Props) => {
 
     const positions = currentTrack?.positions || [];
 
-    useEffect(() => {
-        const fetchTrackPositions = async () => {
-            try {
-                dispatch(setLoading(true));
-                const response = await api.post('/api/trackpositions/multiple', {
-                    trackId: track.id,
-                    timestampOrder: 'desc'
-                });
+    // useEffect(() => {
+    //     const fetchTrackPositions = async () => {
+    //         try {
+    //             dispatch(setLoading(true));
+    //             const response = await api.post('/api/trackpositions/multiple', {
+    //                 trackId: track.id,
+    //                 timestampOrder: 'desc'
+    //             });
 
-                dispatch(updateTrack({
-                    id: track.id,
-                    positions: response.data.data,
-                }));
-            } catch (error) {
-                dispatch(setError('Failed to fetch track positions'));
-            } finally {
-                dispatch(setLoading(false));
-            }
-        };
+    //             dispatch(updateTrack({
+    //                 id: track.id,
+    //                 positions: response.data.data,
+    //             }));
+    //         } catch (error) {
+    //             dispatch(setError('Failed to fetch track positions'));
+    //         } finally {
+    //             dispatch(setLoading(false));
+    //         }
+    //     };
 
-        fetchTrackPositions();
-    }, [track.id, dispatch]);
+    //     fetchTrackPositions();
+    // }, [track.id, dispatch]);
 
     return (
         <div>
@@ -68,14 +68,14 @@ const TrackPositions = ({ track }: Props) => {
 
                     <AccordionContent className="max-h-80 overflow-y-auto ">
                         <div className='flex gap-1 w-full'>
-                        <NewTrackPosition track={track} onCreate={(newTrkPos)=>console.log(newTrkPos)} />
-                        <Button size='sm' className='w-1/2' onClick={()=>{
-                           dispatch(setRouteFocusEntity(track))
-                           dispatch(setRouteFocusData(currentTrack?.positions || []))
+                            <NewTrackPosition track={track} onCreate={(newTrkPos) => console.log(newTrkPos)} />
+                            <Button size='sm' className='w-1/2' onClick={() => {
+                                dispatch(setRouteFocusEntity(track))
+                                dispatch(setRouteFocusData(currentTrack?.positions || []))
 
-                        }}>
-                            Show track route
-                        </Button>
+                            }}>
+                                Show track route
+                            </Button>
                         </div>
                         {positions.length === 0 && (
                             <div className="text-muted-foreground text-sm p-2">

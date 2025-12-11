@@ -32,6 +32,12 @@ const missionsSlice = createSlice({
     setMission(state, action: PayloadAction<Mission>) {
       state.data = action.payload;
     },
+    updateMission(state, action: PayloadAction<Partial<Mission>>) {
+      state.data = {
+        ...state.data,
+        ...action.payload,
+      };
+    },
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
     },
@@ -40,12 +46,11 @@ const missionsSlice = createSlice({
     },
     updateTrack(state, action: PayloadAction<Partial<Track> & { id: string }>) {
       const trackId = action.payload.id;
-
       state.data.tracks = state.data.tracks?.map((track) => {
         if (track.id === trackId) {
           return {
             ...track,
-            ...action.payload,   // 🔥 merge instead of replace
+            ...action.payload,  
           };
         }
         return track;
@@ -54,8 +59,11 @@ const missionsSlice = createSlice({
     addGeofence(state, action: PayloadAction<Geofence>) {
       state.data.geofences?.push(action.payload);
     },
+    deleteGeofence(state, action: PayloadAction<string>) {
+      state.data.geofences = state.data.geofences?.filter((geofence) => geofence.id !== action.payload);
+    },
   },
 });
 
-export const { setMission, setLoading, setError, updateTrack, addGeofence } = missionsSlice.actions;
+export const { setMission, setLoading, setError, updateTrack, addGeofence, deleteGeofence, updateMission } = missionsSlice.actions;
 export default missionsSlice.reducer;

@@ -8,16 +8,20 @@ import { Separator } from "@/components/ui/separator"
 import { Track } from "@/lib/types"
 import IconRenderer from "./icon-renderer"
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { useAppDispatch } from "@/store/hook"
+import { setSidebarData, setSidebarType } from "@/store/slices/sidebarSlice"
 
 type Props = {
   track: Track;
 }
 
 export default function TrackPopup({ track }: Props) {
-  if(track.positions === undefined) return null
+  if (track.positions === undefined) return null
   const classification = track.classification;
   const velocity = track.velocity;
   const rotation = track.positions[0].heading || 0;
+  const dispatch = useAppDispatch();
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -25,18 +29,27 @@ export default function TrackPopup({ track }: Props) {
           <p className="bg-zinc-700 text-white px-1 rounded absolute -top-4 left-4 min-w-30 text-start truncate -z-2">
             {track.trackId}
           </p>
-         <div style={{ transform: `rotate(${rotation}deg)` }}>
-  <IconRenderer
-    icon={track.type}
-    color={track.status === "ACTIVE" ? "green-500" : "red-500"}
-  />
-</div>
+          <div style={{ transform: `rotate(${rotation}deg)` }}>
+            <IconRenderer
+              icon={track.type}
+              color={track.status === "ACTIVE" ? "green-500" : "red-500"}
+            />
+          </div>
         </button>
       </PopoverTrigger>
 
       <PopoverContent className="w-80 space-y-2 p-3">
         {/* Header */}
         <div className="flex items-center justify-between">
+          <Button variant='secondary' size='sm'
+            onClick={() => {
+              dispatch(setSidebarType('track'))
+              dispatch(setSidebarData(track))
+            }}
+          >
+          Edit track
+          </Button>
+          <div className="flex gap-1"> 
           <Badge>{track.type}</Badge>
           <Badge
             className={cn({
@@ -49,6 +62,7 @@ export default function TrackPopup({ track }: Props) {
           >
             {track.threatLevel}
           </Badge>
+          </div>
         </div>
 
         <Separator />

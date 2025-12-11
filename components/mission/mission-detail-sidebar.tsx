@@ -1,4 +1,4 @@
-import { Mission } from '@/lib/types'
+import { Mission, MissionStatus } from '@/lib/types'
 import React from 'react'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
@@ -12,19 +12,34 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import EntityCreateButton from './entity-create-button'
-type Props = {
-  mission: Mission | null
-}
+import { useAppDispatch, useAppSelector } from '@/store/hook'
+import { RootState } from '@/store/store'
+import api from '@/lib/auth'
+import { toast } from 'sonner'
+import { updateMission } from '@/store/slices/missionSlice'
 
-const MissionDetailSidebar = ({ mission }: Props) => {
+
+const MissionDetailSidebar =  () => {
+  const mission = useAppSelector((state: RootState) => state.mission.data);
+  const dispatch = useAppDispatch();
+  const handleMissionStatusChange = async (value: MissionStatus) => { 
+    try {
+      const res = await api.put(`/api/mission/update/${mission?.id}`, { status: value });
+      if(res.status != 201) {
+        toast.error("Something went wrong");
+      };
+      dispatch(updateMission({ status: value }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className='p-2'>
         <h2 className='text-lg font-semibold'>{mission?.name}</h2>
         <p className='text-xs text-muted-foreground'>Description: {mission?.description}</p>
         <div className='flex gap-2 mt-1 w-full items-center'>
           <Badge className='capitalize h-fit'>{mission?.type}</Badge>
-          <Badge className='capitalize h-fit'>{mission?.status}</Badge>
-          <Select>
+          <Select defaultValue={mission?.status} onValueChange={handleMissionStatusChange}>
             <SelectTrigger  size='sm'>
               <SelectValue placeholder="Status" className='h-5 py-0 ml-auto' />
             </SelectTrigger>

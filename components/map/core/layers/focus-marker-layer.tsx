@@ -49,7 +49,8 @@ function resolveFocusCenter(
         lat: asset.location.lat,
       };
     }
-
+    case null:
+      return null;
     default:
       return null;
   }
@@ -69,8 +70,10 @@ export default function FocusMarkerLayer() {
   useEffect(() => {
     if (!map) return;
     const center = resolveFocusCenter(focusType, focusData);
-    if (!center) return;
-
+    if (center == null) {
+      markerRef.current?.remove();
+      return;
+    };
     // Remove old marker
     markerRef.current?.remove();
 
