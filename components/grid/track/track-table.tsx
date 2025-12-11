@@ -137,7 +137,6 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                         <div className="font-medium text-foreground">{row.original.trackId}</div>
                     );
                 },
-                size: 250,
                 enableSorting: true,
                 enableHiding: false,
                 enableResizing: true,
@@ -184,24 +183,27 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                                     </div>
                                     <Separator />
                                     <div className="p-4 text-sm *:[p:not(:last-child)]:mb-2">
-                                        <PopoverClose onClick={(e)=>{
-                                            e.stopPropagation()
-                                        }}>
-                                        <Button size='sm'
-                                            onClick={(e) => {
-                                                if (lastPosition) {
-                                                    dispatch(setMapType('trackPosition'));
-                                                    dispatch(setMapData(lastPosition));
-                                                }
-                                                const mapRoute = pathname.split('/')                                                
-                                                router.push('/'+ mapRoute[1] + '/' + mapRoute[2])
-                                            }}
-                                        >
-                                            Yes
-                                        </Button>
+                                        <PopoverClose asChild>
+                                            <Button size='sm'
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    if (lastPosition) {
+                                                        dispatch(setMapType('trackPosition'));
+                                                        dispatch(setMapData(lastPosition));
+                                                    }
+                                                    const mapRoute = pathname.split('/')
+                                                    router.push('/' + mapRoute[1] + '/' + mapRoute[2])
+                                                }}
+                                            >
+                                                Yes
+                                            </Button>
                                         </PopoverClose>
-                                        <PopoverClose>
-                                            <Button variant='ghost' size='sm'>No</Button>
+                                        <PopoverClose asChild>
+                                            <Button
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                }}
+                                                variant='ghost' size='sm'>No</Button>
                                         </PopoverClose>
                                     </div>
                                 </PopoverContent>
@@ -238,6 +240,8 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                 enableSorting: true,
                 enableHiding: true,
                 enableResizing: true,
+                size: 100,
+
             },
             {
                 accessorKey: 'classification',
@@ -285,16 +289,16 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                         );
                     }
                 },
-                size: 100,
                 enableSorting: true,
                 enableHiding: true,
                 enableResizing: true,
+                size: 100,
             },
             {
                 id: 'actions',
                 header: '',
                 cell: ({ row }) => <ActionsCell row={row} />,
-                size: 60,
+                size: 50,
                 enableSorting: false,
                 enableHiding: false,
                 enableResizing: false,
@@ -334,14 +338,10 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
 
             }}
             // TODO: Figure out this sidebar rendering, currently it is patch
+            // TODO: Done
             onRowClick={(row) => {
-                if (sidebarType == 'track') {
-                    dispatch(setSidebarType(null));
-                    dispatch(setSidebarData(null));
-                } else {
-                    dispatch(setSidebarType('track'));
-                    dispatch(setSidebarData(row));
-                }
+                dispatch(setSidebarType('track'));
+                dispatch(setSidebarData(row));
             }}
             tableLayout={{
                 columnsPinnable: true,

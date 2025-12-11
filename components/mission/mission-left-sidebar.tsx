@@ -3,12 +3,9 @@
 import { RootState } from '@/store/store';
 import React, { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
-import { Button } from '../ui/button';
 import MissionDetailSidebar from './mission-detail-sidebar';
 import AssetDetail from './detail/asset-detail';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import TrackDetail from './detail/track/track-detail';
 import TrackList from './list/track-list';
 
@@ -17,12 +14,9 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandInput,
-  CommandItem,
   CommandList,
   CommandSeparator,
-  CommandShortcut,
 } from "@/components/ui/command"
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Label } from '../ui/label';
 import { Checkbox } from '../ui/checkbox';
 import GeofenceList from './list/geofence-list';
@@ -52,7 +46,7 @@ const MissionLeftSidebar = (props: Props) => {
   if (sidebarType == 'track') {
     return (
       <Layout>
-        <TrackDetail />
+        <TrackDetail key={sidebarData?.id} />
       </Layout>
     )
   }
