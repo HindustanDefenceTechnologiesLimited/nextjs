@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardFooter, CardHeader, CardHeading, CardTable, CardToolbar } from '@/components/ui/card';
+import { Card, CardFooter, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DataGrid } from '@/components/ui/data-grid';
 import { DataGridColumnHeader } from '@/components/ui/data-grid-column-header';
@@ -37,7 +37,7 @@ function ActionsCell({ row }: { row: Row<Track> }) {
     const { copy } = useCopyToClipboard();
     const handleCopyId = () => {
         copy(row.original.id);
-        const message = `Employee ID successfully copied: ${row.original.id}`;
+        const message = `Track ID successfully copied: ${row.original.id}`;
         toast.info(message);
     };
 
@@ -351,9 +351,9 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                 dense: true,
             }}
         >
-            <Card>
-                <CardHeader className="py-4">
-                    <CardHeading>
+            <Card className="py-4 gap-2">
+                <CardHeader className="px-4">
+                    <CardTitle>
                         <div className="flex items-center gap-2.5">
                             <div className="relative">
                                 <Search className="size-4 text-muted-foreground absolute start-3 top-1/2 -translate-y-1/2" />
@@ -411,15 +411,11 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                                 </PopoverContent>
                             </Popover>
                         </div>
-                    </CardHeading>
-
+                    </CardTitle>
                 </CardHeader>
-                <CardTable>
-                    <ScrollArea className='max-h-[40vh]'>
+                <CardContent className='px-4 max-h-[40vh] overflow-y-auto relative'>
                         <DataGridTable />
-                        <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
-                </CardTable>
+                </CardContent>
                 <CardFooter>
                     <DataGridPagination />
                 </CardFooter>

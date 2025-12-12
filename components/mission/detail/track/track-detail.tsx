@@ -62,7 +62,7 @@ const TrackDetail = () => {
       await api.put(`/api/track/update/${track.id}`, track);
       toast.success("Track updated successfully!", { id: "save" });
       dispatch(setSidebarData(track));
-      // dispatch(updateTrack(track as Track));
+      dispatch(updateTrack(track as Track));
       setOriginalTrack(track);
     } catch (err) {
       toast.error("Failed to update track", { id: "save" });

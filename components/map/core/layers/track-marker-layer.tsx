@@ -34,7 +34,7 @@ export default function TrackMarkerLayer({ tracks }: Props) {
     run();
 
     return () => {
-      queueMicrotask(() => cleanup());
+      // queueMicrotask(() => cleanup());
     };
   }, [tracks, map]);
 

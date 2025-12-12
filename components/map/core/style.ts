@@ -1,6 +1,7 @@
 export const dark_style = {
   "version": 8,
   "name": "Dark Matter",
+  "projection": { "type": "globe" },
   "metadata": {
     "mapbox:autocomposite": false,
     "mapbox:groups": {

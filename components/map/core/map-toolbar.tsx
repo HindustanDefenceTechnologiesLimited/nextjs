@@ -1,5 +1,5 @@
 import { Button } from "../../ui/button";
-import { LocateIcon, RotateCwIcon } from "lucide-react";
+import { LocateFixedIcon } from "lucide-react";
 import { useMap } from "./map-context";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -20,9 +20,10 @@ const MapToolbar = (props: Props) => {
         mission.mapCoordinates?.center.lat,
       ],
       zoom: 15,
-      curve: 0.5
+      curve: 1,
+      bearing: 0,
+      pitch: 0,
     });
-    // map?.rotateTo(0);
   };
   return (
     <div className="flex absolute top-2 left-2 z-9 backdrop-blur rounded-md gap-1 p-1">
@@ -31,7 +32,7 @@ const MapToolbar = (props: Props) => {
         className="w-6 h-6 bg-background hover:bg-background/60 text-foreground"
         onClick={handleResetMapCenter}
       >
-        <LocateIcon className="w-3 h-3" />
+        <LocateFixedIcon className="w-3 h-3" />
       </Button>
       <Button
         size="sm"

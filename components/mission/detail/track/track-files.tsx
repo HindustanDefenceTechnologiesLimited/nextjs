@@ -21,28 +21,28 @@ const TrackFiles = ({ track }: Props) => {
     );
 
     const files = currentTrack?.files || [];
-    useEffect(() => {
-        const fetchTrackFiles = async () => {
-            try {
-                dispatch(setLoading(true));
+    // useEffect(() => {
+    //     const fetchTrackFiles = async () => {
+    //         try {
+    //             dispatch(setLoading(true));
 
-                const response = await api.post(`/api/file/track/${track.id}`);
-                dispatch(
-                    updateTrack({
-                        id: track.id,
-                        files: response.data.data,
-                    })
-                );
+    //             const response = await api.post(`/api/file/track/${track.id}`);
+    //             dispatch(
+    //                 updateTrack({
+    //                     id: track.id,
+    //                     files: response.data.data,
+    //                 })
+    //             );
 
-            } catch (error) {
-                dispatch(setError("Failed to fetch track files"));
-            } finally {
-                dispatch(setLoading(false));
-            }
-        };
+    //         } catch (error) {
+    //             dispatch(setError("Failed to fetch track files"));
+    //         } finally {
+    //             dispatch(setLoading(false));
+    //         }
+    //     };
 
-        fetchTrackFiles();
-    }, [track.id, dispatch]);
+    //     fetchTrackFiles();
+    // }, [track.id, dispatch]);
 
     const handleUploaded = (uploaded: File[]) => {
         if (!uploaded.length) return;

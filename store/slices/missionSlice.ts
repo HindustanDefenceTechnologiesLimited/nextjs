@@ -46,6 +46,7 @@ const missionsSlice = createSlice({
     },
     updateTrack(state, action: PayloadAction<Partial<Track> & { id: string }>) {
       const trackId = action.payload.id;
+      console.log(trackId);
       state.data.tracks = state.data.tracks?.map((track) => {
         if (track.id === trackId) {
           return {
