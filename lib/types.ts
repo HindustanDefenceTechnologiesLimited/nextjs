@@ -51,22 +51,7 @@ export enum SensorStatus {
   ERROR = "ERROR",
 }
 
-export enum AssetType {
-  DRONE = "DRONE",
-  VEHICLE = "VEHICLE",
-  AIRCRAFT = "AIRCRAFT",
-  VESSEL = "VESSEL",
-  GROUND_UNIT = "GROUND_UNIT",
-  EQUIPMENT = "EQUIPMENT",
-  FACILITY = "FACILITY",
-}
 
-export enum AssetStatus {
-  AVAILABLE = "AVAILABLE",
-  DEPLOYED = "DEPLOYED",
-  MAINTENANCE = "MAINTENANCE",
-  OFFLINE = "OFFLINE",
-}
 
 export enum ObjectiveType {
   REACH_LOCATION = "REACH_LOCATION",
@@ -239,6 +224,23 @@ export interface Sensor {
   asset?: Asset;
 }
 
+export enum AssetType {
+  DRONE = "DRONE",
+  VEHICLE = "VEHICLE",
+  AIRCRAFT = "AIRCRAFT",
+  VESSEL = "VESSEL",
+  PERSON = "PERSON",
+  GROUND_UNIT = "GROUND_UNIT",
+  EQUIPMENT = "EQUIPMENT",
+  FACILITY = "FACILITY",
+}
+
+export enum AssetStatus {
+  AVAILABLE = "AVAILABLE",
+  DEPLOYED = "DEPLOYED",
+  MAINTENANCE = "MAINTENANCE",
+  OFFLINE = "OFFLINE",
+}
 export interface Asset {
   id: string;
   missionId: string;

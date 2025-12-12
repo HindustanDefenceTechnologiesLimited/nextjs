@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { CommandItem } from '@/components/ui/command'
-import { Track } from '@/lib/types'
+import { Asset, Track } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { useAppDispatch } from '@/store/hook'
 import { setMapData, setMapType } from '@/store/slices/mapSlice'
@@ -9,29 +9,35 @@ import { AlertCircleIcon, AlertOctagon, AlertOctagonIcon, AlertTriangleIcon, Bad
 import React from 'react'
 
 type Props = {
-    tracks: Track[]
+    assets: Asset[]
 }
 
-const TrackList = ({ tracks = [] }: Props) => {
+const AssetList = ({ assets = [] }: Props) => {
     const dispatch = useAppDispatch();
 
 
     return (
         <div>
-            {tracks.map((track) => (
-                <CommandItem key={track.id}
+            {assets.map((asset) => (
+                <CommandItem key={asset.id}
                     onSelect={(e) => {
-                        dispatch(setSidebarType('track'))
-                        dispatch(setSidebarData(track))
+                        dispatch(setSidebarType('asset'))
+                        dispatch(setSidebarData(asset))
                     }}
-                    className='cursor-pointer'
+                    className='cursor-pointer group'
+
                 >
-                    <div className={cn('h-4 w-1 rounded ', color(track.status))} />
-                    {renderIcon(track, '4')}
-                    {(track.trackId).split('-').map((id) => id.charAt(0).toUpperCase() + id.slice(1)).join(' ')}
-                    
-                    <span className='ml-auto'>
-                        {threat(track.threatLevel)}
+                    {asset.title}
+                    <Button size='icon-sm' variant='ghost' className='h-6 w-6 ml-auto opacity-0 group-hover:opacity-100'
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                dispatch(setMapType('asset'));
+                                dispatch(setMapData(asset))
+                            }}>
+                            <MapPinIcon className='w-4 h-4' />
+                        </Button>
+                    <span >
+                        {status(asset.status)}
                     </span>
                 </CommandItem>
             ))}
@@ -39,7 +45,7 @@ const TrackList = ({ tracks = [] }: Props) => {
     )
 }
 
-export default TrackList
+export default AssetList
 
 export const renderIcon = (track: Track, size?: string) => {
     if (track.type === 'PERSON') {
@@ -71,17 +77,17 @@ const color = (status: string) => {
     }
 }
 
-const threat = (level: string) => {
-    switch (level) {
+const status = (status: string) => {
+    switch (status) {
         case "NONE":
             return <BadgeQuestionMarkIcon className="text-muted-foreground h-4 w-4" />;
-        case "LOW":
-            return <AlertCircleIcon className="text-green-500 h-4 w-4" />;
-        case "MEDIUM":
+        case "AVAILABLE":
+            return <CheckIcon className="text-green-500 h-4 w-4" />;
+        case "DEPLOYED":
             return <AlertCircleIcon className="text-yellow-500 h-4 w-4" />;
-        case "HIGH":
-            return <AlertCircleIcon className="text-amber-600 h-4 w-4" />;
-        case "CRITICAL":
+        case "MAINTENANCE":
+            return <AlertCircleIcon className="text-blue-600 h-4 w-4" />;
+        case "OFFLINE":
             return <AlertCircleIcon className="text-red-500 h-4 w-4" />;
         default:
             return "";

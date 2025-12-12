@@ -18,13 +18,14 @@ const GeofenceList = ({ geofences = [] }: Props) => {
         <div>
             {geofences.map((geofence) => (
                 <CommandItem key={geofence.id}
+                    className='cursor-pointer group'
 
                 >
                     {renderIcon(geofence.geometry.shapeType)}
                     {geofence.name}
                     <span className='hidden'>{geofence.id}</span>
                     <span className='ml-auto'>
-                        <Button size='icon-sm' variant='ghost' className='h-6 w-6'
+                        <Button size='icon-sm' variant='ghost' className='h-6 w-6 opacity-0 group-hover:opacity-100'
                             onClick={() => {
                                 dispatch(setMapType('geofence'));
                                 dispatch(setMapData(geofence))

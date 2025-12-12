@@ -11,6 +11,7 @@ import { PlusIcon } from 'lucide-react'
 import { Button } from '../ui/button'
 import CreateGeofenceButton from './create/create-geofence-button'
 import CreateTrackButton from './create/create-track-button'
+import CreateAssetButton from './create/create-asset-button'
 type Props = {}
 
 const EntityCreateButton = (props: Props) => {
@@ -26,7 +27,7 @@ const EntityCreateButton = (props: Props) => {
                 <DropdownMenuSeparator />
                 <CreateGeofenceButton/>
                 <CreateTrackButton/>
-                <DropdownMenuItem>Asset</DropdownMenuItem>
+                <CreateAssetButton/>
             </DropdownMenuContent>
         </DropdownMenu>
     )

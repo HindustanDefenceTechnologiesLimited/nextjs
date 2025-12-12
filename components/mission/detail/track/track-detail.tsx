@@ -168,7 +168,7 @@ const TrackDetail: React.FC = () => {
     const parts = keyPath.split(".");
     setTrack((prev) => {
       const next = safeClone(prev);
-      if (!next.classification) next.classification = { ...next.classification || {} , attributes: {} } as any;
+      if (!next.classification) next.classification = { ...next.classification || {}, attributes: {} } as any;
       if (!next.classification!.attributes) next.classification!.attributes = {};
       let pointer: any = next.classification!.attributes;
 
@@ -236,7 +236,6 @@ const TrackDetail: React.FC = () => {
 
   const isDirty = !deepEqual(track, originalTrack);
 
-  /** Renderers for attribute types */
   const renderAttributeField = (
     keyPath: string,
     spec: AttributeSpec,

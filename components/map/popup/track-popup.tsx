@@ -26,13 +26,21 @@ export default function TrackPopup({ track }: Props) {
     <Popover>
       <PopoverTrigger asChild>
         <button className="p-2 cursor-pointer relative">
-          <p className="bg-zinc-700 text-white px-1 rounded absolute -top-4 left-4 min-w-30 text-start truncate -z-2">
+          <p className="flex bg-gray-100 text-xs text-gray-900 gap-1 rounded absolute -top-4 left-4 pr-2 text-start truncate -z-2">
+            <div className={cn('w-2',{
+              "bg-green-600": track.threatLevel === "NONE",
+              "bg-yellow-500": track.threatLevel === "LOW",
+              "bg-orange-500": track.threatLevel === "MEDIUM",
+              "bg-red-600": track.threatLevel === "HIGH",
+              "bg-purple-700": track.threatLevel === "CRITICAL",
+            })}/>
             {track.trackId}
           </p>
           <div style={{ transform: `rotate(${rotation}deg)` }}>
             <IconRenderer
               icon={track.type}
-              color={track.status === "ACTIVE" ? "green-500" : "red-500"}
+              // color={track.status === "ACTIVE" ? "green-500" : "red-500"}
+              color="blue-400"
             />
           </div>
         </button>
