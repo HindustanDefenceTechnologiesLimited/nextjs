@@ -610,12 +610,14 @@ export interface UpdateSensorDto {
   metadata?: Record<string, any>;
 }
 
-export interface CreateTrackDto {
-  // trackId: string;
+export interface CreateTrackDTO {
+  trackId: string;
   description?: string;
   type: TrackType;
-  missionId: string;
-  threatLevel?: ThreatLevel;
+  status: TrackStatus;
+  threatLevel: ThreatLevel;
+
+  missionId: string; // required
   classification?: Classification;
   velocity?: Velocity;
   metadata?: Record<string, any>;

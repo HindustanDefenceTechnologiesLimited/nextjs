@@ -44,6 +44,9 @@ const missionsSlice = createSlice({
     setError(state, action: PayloadAction<string | null>) {
       state.error = action.payload;
     },
+    addTrack(state, action: PayloadAction<Track>) {
+      state.data.tracks?.unshift(action.payload);
+    },
     updateTrack(state, action: PayloadAction<Partial<Track> & { id: string }>) {
       const trackId = action.payload.id;
       console.log(trackId);
@@ -66,5 +69,5 @@ const missionsSlice = createSlice({
   },
 });
 
-export const { setMission, setLoading, setError, updateTrack, addGeofence, deleteGeofence, updateMission } = missionsSlice.actions;
+export const { setMission, setLoading, setError, updateTrack, addGeofence, deleteGeofence, updateMission, addTrack } = missionsSlice.actions;
 export default missionsSlice.reducer;
