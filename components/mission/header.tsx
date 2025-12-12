@@ -22,11 +22,11 @@ const Header = (props: Props) => {
                         <Table2 className='w-4 h-4' /> Grid
                     </Button>
                 </Link>
-                <Link href={'/mission/' + missionPath[2] + '/files'}>
+                {/* <Link href={'/mission/' + missionPath[2] + '/files'}>
                     <Button variant={missionPath[3] === 'files' ? 'secondary' : 'ghost'} size='sm' className='text-sm font-normal'>
                         <File className='w-4 h-4' /> Files
                     </Button>
-                </Link>
+                </Link> */}
 
             </div>
         </div>
