@@ -1,7 +1,7 @@
-import { TrackType } from "@/lib/types"
+import { AssetType, TrackType } from "@/lib/types"
 import { CarIcon, DroneIcon, PlaneIcon, User2Icon } from "lucide-react"
 
-export default function IconRenderer({ icon, color='cyan-400' }: { icon: TrackType, color?: string, rotation?: number }) {
+export default function IconRenderer({ icon, color='cyan-400' }: { icon: TrackType | AssetType, color?: string, rotation?: number }) {
     switch (icon) {
         // case 'AIRCRAFT':
         //     return <img src="/icons/plane.svg" className="w-10" alt="Aircraft" />

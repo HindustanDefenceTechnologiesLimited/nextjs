@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Separator } from "../ui/separator";
 import MissionDetailSidebar from "./mission-detail-sidebar";
-import AssetDetail from "./detail/asset-detail";
+import AssetDetail from "./detail/asset/asset-detail";
 import TrackDetail from "./detail/track/track-detail";
 import TrackList from "./list/track-list";
 

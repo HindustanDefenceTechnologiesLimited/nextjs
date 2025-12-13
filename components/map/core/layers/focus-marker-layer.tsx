@@ -3,7 +3,7 @@ import maplibregl from "maplibre-gl";
 import { useMap } from "../map-context";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { Geofence, TrackPosition } from "@/lib/types";
+import { Asset, AssetPosition, Geofence, TrackPosition } from "@/lib/types";
 
 /* -------------------------------------------------------
    Helpers
@@ -29,6 +29,14 @@ function resolveFocusCenter(
       };
     }
 
+    case "assetPosition": {
+      const pos = data as AssetPosition;
+      return {
+        lng: pos.longitude,
+        lat: pos.latitude,
+      };
+    }
+
     case "geofence": {
       const fence = data as Geofence;
       return {
@@ -38,15 +46,14 @@ function resolveFocusCenter(
     }
 
     case "asset": {
-      const asset = data as {
-        location?: { lng: number; lat: number };
-      };
-
-      if (!asset.location) return null;
+      const asset = data as Asset;
+      const positions = asset.positions || [];
+      if(positions.length === 0) return null;
+      if(positions == undefined)  return null;
 
       return {
-        lng: asset.location.lng,
-        lat: asset.location.lat,
+        lng: positions[0].longitude,
+        lat: positions[0].latitude,
       };
     }
     case null:

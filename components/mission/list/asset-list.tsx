@@ -5,9 +5,13 @@ import { cn } from '@/lib/utils'
 import { useAppDispatch } from '@/store/hook'
 import { setMapData, setMapType } from '@/store/slices/mapSlice'
 import { setSidebarData, setSidebarType } from '@/store/slices/sidebarSlice'
-import { AlertCircleIcon, AlertOctagon, AlertOctagonIcon, AlertTriangleIcon, BadgeQuestionMark, BadgeQuestionMarkIcon, CarIcon, CheckIcon, DogIcon, DroneIcon, MapPinIcon, Plane, PlaneIcon, ShieldQuestionMark, ShipIcon, UserIcon } from 'lucide-react'
+import { AlertCircleIcon, AlertOctagon, AlertOctagonIcon, AlertTriangleIcon, BadgeQuestionMark, BadgeQuestionMarkIcon, CarIcon, Check, CheckIcon, DogIcon, DroneIcon, MapPinIcon, Plane, PlaneIcon, ShieldQuestionMark, ShipIcon, UserIcon } from 'lucide-react'
 import React from 'react'
-
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 type Props = {
     assets: Asset[]
 }
@@ -29,15 +33,24 @@ const AssetList = ({ assets = [] }: Props) => {
                 >
                     {asset.title}
                     <Button size='icon-sm' variant='ghost' className='h-6 w-6 ml-auto opacity-0 group-hover:opacity-100'
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                dispatch(setMapType('asset'));
-                                dispatch(setMapData(asset))
-                            }}>
-                            <MapPinIcon className='w-4 h-4' />
-                        </Button>
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            dispatch(setMapType('asset'));
+                            dispatch(setMapData(asset))
+                        }}>
+                        <MapPinIcon className='w-4 h-4' />
+                    </Button>
                     <span >
-                        {status(asset.status)}
+                        <Tooltip >
+                            <TooltipTrigger asChild>
+                                <p>
+                                {status(asset.status)}
+                                </p>
+                            </TooltipTrigger>
+                            <TooltipContent side='right' >
+                                <p>{asset.status}</p>
+                            </TooltipContent>
+                        </Tooltip>
                     </span>
                 </CommandItem>
             ))}
@@ -84,7 +97,7 @@ const status = (status: string) => {
         case "AVAILABLE":
             return <CheckIcon className="text-green-500 h-4 w-4" />;
         case "DEPLOYED":
-            return <AlertCircleIcon className="text-yellow-500 h-4 w-4" />;
+            return <CheckIcon className="text-yellow-500 h-4 w-4" />;
         case "MAINTENANCE":
             return <AlertCircleIcon className="text-blue-600 h-4 w-4" />;
         case "OFFLINE":

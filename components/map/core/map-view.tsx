@@ -7,17 +7,19 @@ import { MapContext } from "./map-context";
 import FocusMarkerLayer from "./layers/focus-marker-layer";
 import TrackMarkerLayer from "./layers/track-marker-layer";
 import MapToolbar from "./map-toolbar";
-import { Geofence, Track } from "@/lib/types";
+import { Asset, Geofence, Track } from "@/lib/types";
 import RouteLayer from "./layers/route-layer";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import GeofenceShapeLayer from "./layers/geofence-shape-layer";
 import { dark_style } from "./style";
+import AssetMarkerLayer from "./layers/asset-marker-layer";
 
 type Props = {
     entites: {
         tracks: Track[];
         geofences: Geofence[];
+        assets: Asset[]
     };
 };
 
@@ -70,6 +72,7 @@ export default function SimpleMap({ entites }: Props) {
                     <RouteLayer />
                     <MapToolbar />
                     <FocusMarkerLayer />
+                    <AssetMarkerLayer assets={entites.assets} />
                     <TrackMarkerLayer tracks={entites.tracks} />
                     <GeofenceShapeLayer geofences={entites.geofences}/>
                 </MapContext.Provider>

@@ -1,6 +1,6 @@
 import { Asset, AssetStatus, AssetType } from '@/lib/types'
 import React from 'react'
-import DetailLayout from './detail-layout'
+import DetailLayout from '../detail-layout'
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { Label } from '@/components/ui/label';
@@ -16,11 +16,12 @@ import { toast } from 'sonner';
 import { useAppDispatch } from '@/store/hook';
 import { updateAsset } from '@/store/slices/missionSlice';
 import { setSidebarData } from '@/store/slices/sidebarSlice';
+import AssetPositions from './asset-positions';
 
 
 const AssetDetail = () => {
   const sidebarData = useSelector((state: RootState) => state.sidebar.data) as Asset;
-  const [formData, setFormData] = React.useState<Asset>(sidebarData);
+  const [formData, setFormData] = React.useState<Asset>({...sidebarData, positions: undefined});
   const [loading, setLoading] = React.useState(false);
   const isDirty =  JSON.stringify(sidebarData) !== JSON.stringify(formData);
   const dispatch = useAppDispatch();
@@ -33,7 +34,7 @@ const AssetDetail = () => {
       const res = await api.put(`/api/asset/update/${sidebarData?.id}`, formData);
       if (res.status === 201) {
         toast.success("Asset updated successfully!");
-        dispatch(updateAsset(formData));
+        dispatch(updateAsset(res.data.data));
         dispatch(setSidebarData(res.data.data));
         setFormData(res.data.data);
       }
@@ -118,6 +119,7 @@ const AssetDetail = () => {
             </TagsInputClear>
           </TagsInput>
         </div>
+        <AssetPositions asset={sidebarData} />
       </div>
       <div className="sticky bottom-0 bg-card/30 backdrop-blur-lg justify-end rounded-b-md p-2 flex gap-2">
               <Button variant="ghost" size="sm" onClick={handleCancel}>
