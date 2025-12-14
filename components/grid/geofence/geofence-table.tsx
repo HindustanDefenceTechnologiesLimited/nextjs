@@ -16,7 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
 import { ColumnDef, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, Row, SortingState, useReactTable, } from '@tanstack/react-table';
-import { Ellipsis, Filter, Search, UserRoundPlus, X } from 'lucide-react';
+import { Ellipsis, Filter, ScanIcon, Search, UserRoundPlus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Geofence } from '@/lib/types';
 import { useAppDispatch } from '@/store/hook';
@@ -117,7 +117,7 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
 
                 cell: ({ row }) => {
                     return (
-                        <div className="font-medium text-foreground">{row.original.name}</div>
+                       row.original.name
                     );
                 },
                 enableSorting: true,
@@ -130,9 +130,7 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
                 header: ({ column }) => <DataGridColumnHeader title="Threat" visibility={true} column={column} />,
                 cell: ({ row }) => {
                     return (
-                        <div className="flex items-center gap-1.5">
-                            {row.original.type}
-                        </div>
+                        row.original.type
                     );
                 },
 
@@ -150,9 +148,7 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
                 header: ({ column }) => <DataGridColumnHeader title="Geometry" visibility={true} column={column} />,
                 cell: ({ row }) => {
                     return (
-                        <div className="flex items-center gap-1.5">
-                            <div className="font-medium text-foreground">{row.original.geometry.shapeType}</div>
-                        </div>
+                       row.original.geometry.shapeType
                     );
                 },
 
@@ -172,9 +168,7 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
                 header: ({ column }) => <DataGridColumnHeader title="Active" visibility={true} column={column} />,
                 cell: ({ row }) => {
                     return (
-                        <div className="flex items-center gap-1.5">
-                            <div className="font-medium text-foreground">{row.original.isActive ? 'True' : 'False'}</div>
-                        </div>
+                        row.original.isActive ? 'True' : 'False'
                     );
                 },
 
@@ -243,14 +237,17 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
             <Card className="py-4 gap-2">
                 <CardHeader className="px-4">
                     <CardTitle>
-                        <div className="flex items-center gap-2.5">
+                        <div className="flex items-center justify-between gap-2.5">
+                            <p className='text-lg flex items-center gap-2'>
+                                <ScanIcon className='w-5 h-5' />
+                                Geofences</p>
                             <div className="relative">
                                 <Search className="size-4 text-muted-foreground absolute start-3 top-1/2 -translate-y-1/2" />
                                 <Input
                                     placeholder="Search..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="ps-9 w-40"
+                                    className="ps-9 w-80"
                                 />
                                 {searchQuery.length > 0 && (
                                     <Button

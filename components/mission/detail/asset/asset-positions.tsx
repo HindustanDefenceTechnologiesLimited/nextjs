@@ -24,11 +24,11 @@ const AssetPositions = ({ asset }: Props) => {
     const dispatch = useAppDispatch();
 
     // Always get the LIVE track from redux
-    const currentTrack = useSelector((state: RootState) =>
+    const currentAsset = useSelector((state: RootState) =>
         state.mission.data.assets?.find((a) => a.id === asset.id)
     );
 
-    const positions = currentTrack?.positions || [];
+    const positions = currentAsset?.positions || [];
 
 
     return (
@@ -46,14 +46,13 @@ const AssetPositions = ({ asset }: Props) => {
 
                     <AccordionContent className="max-h-80 overflow-y-auto ">
                         <div className='flex gap-1 w-full mb-2'>
-                            <NewAssetPosition asset={asset} onCreate={(newAssetPos) => console.log(newAssetPos)} />
-                            {/* <Button size='sm' className='w-1/2' onClick={() => {
-                                dispatch(setRouteFocusEntity(track))
-                                dispatch(setRouteFocusData(currentTrack?.positions || []))
-
+                            <NewAssetPosition asset={asset} onCreate={(newAssetPos) => console.log(newAssetPos)} key={`new-asset-position-${positions.length}`} />
+                            <Button size='sm' className='w-1/2' onClick={() => {
+                                dispatch(setRouteFocusEntity(asset))
+                                dispatch(setRouteFocusData(currentAsset?.positions || []))
                             }}>
                                 Show track route
-                            </Button> */}
+                            </Button>
                         </div>
                         {positions.length === 0 && (
                             <div className="text-muted-foreground text-sm p-2">

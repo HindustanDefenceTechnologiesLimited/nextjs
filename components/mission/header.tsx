@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { Button } from '../ui/button'
-import { File, Map, Table2 } from 'lucide-react'
+import { AlertTriangleIcon, File, Map, Table2 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 type Props = {}
@@ -22,11 +22,11 @@ const Header = (props: Props) => {
                         <Table2 className='w-4 h-4' /> Grid
                     </Button>
                 </Link>
-                {/* <Link href={'/mission/' + missionPath[2] + '/files'}>
-                    <Button variant={missionPath[3] === 'files' ? 'secondary' : 'ghost'} size='sm' className='text-sm font-normal'>
-                        <File className='w-4 h-4' /> Files
+                <Link href={'/mission/' + missionPath[2] + '/alert'}>
+                    <Button variant={missionPath[3] === 'alert' ? 'secondary' : 'ghost'} size='sm' className='text-sm font-normal'>
+                        <AlertTriangleIcon className='w-4 h-4' /> Alerts
                     </Button>
-                </Link> */}
+                </Link>
 
             </div>
         </div>

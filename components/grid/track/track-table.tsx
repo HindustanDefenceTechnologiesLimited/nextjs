@@ -16,7 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
 import { ColumnDef, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, Row, SortingState, useReactTable, } from '@tanstack/react-table';
-import { Ellipsis, Filter, Search, UserRoundPlus, X } from 'lucide-react';
+import { Ellipsis, Filter, RouteIcon, Search, UserRoundPlus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Track } from '@/lib/types';
 import { useAppDispatch } from '@/store/hook';
@@ -351,32 +351,16 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                 dense: true,
             }}
         >
-            <Card className="py-4 gap-2">
+            <Card className="py-4 gap-2 font-normal">
                 <CardHeader className="px-4">
                     <CardTitle>
                         <div className="flex items-center gap-2.5">
-                            <div className="relative">
-                                <Search className="size-4 text-muted-foreground absolute start-3 top-1/2 -translate-y-1/2" />
-                                <Input
-                                    placeholder="Search..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="ps-9 w-40"
-                                />
-                                {searchQuery.length > 0 && (
-                                    <Button
-                                        size='icon'
-                                        variant="ghost"
-                                        className="absolute end-1.5 top-1/2 -translate-y-1/2 h-6 w-6"
-                                        onClick={() => setSearchQuery('')}
-                                    >
-                                        <X />
-                                    </Button>
-                                )}
-                            </div>
+                            <p className="text-lg flex items-center gap-2">
+                                <RouteIcon className='w-5 h-5'/>
+                                Tracks</p>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="outline">
+                                    <Button variant="outline" className='ml-auto'>
                                         <Filter />
                                         Status
                                         {selectedStatuses.length > 0 && (
@@ -410,11 +394,31 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                                     </div>
                                 </PopoverContent>
                             </Popover>
+                            <div className="relative">
+                                <Search className="size-4 text-muted-foreground absolute start-3 top-1/2 -translate-y-1/2" />
+                                <Input
+                                    placeholder="Search..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="ps-9 w-80"
+                                />
+                                {searchQuery.length > 0 && (
+                                    <Button
+                                        size='icon'
+                                        variant="ghost"
+                                        className="absolute end-1.5 top-1/2 -translate-y-1/2 h-6 w-6"
+                                        onClick={() => setSearchQuery('')}
+                                    >
+                                        <X />
+                                    </Button>
+                                )}
+                            </div>
+
                         </div>
                     </CardTitle>
                 </CardHeader>
                 <CardContent className='px-4 max-h-[40vh] overflow-y-auto relative'>
-                        <DataGridTable />
+                    <DataGridTable />
                 </CardContent>
                 <CardFooter>
                     <DataGridPagination />

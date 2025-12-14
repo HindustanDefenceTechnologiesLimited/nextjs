@@ -1,0 +1,421 @@
+'use client'
+import { useEffect, useMemo, useState } from 'react';
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { DataGrid } from '@/components/ui/data-grid';
+import { DataGridColumnHeader } from '@/components/ui/data-grid-column-header';
+import { DataGridPagination } from '@/components/ui/data-grid-pagination';
+import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll, } from '@/components/ui/data-grid-table';
+import { DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
+import { ColumnDef, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, Row, RowSelectionState, SortingState, useReactTable, } from '@tanstack/react-table';
+import { AlertTriangle, ChevronDownIcon, Ellipsis, Filter, Search, UserRoundPlus, X } from 'lucide-react';
+import { toast } from 'sonner';
+import { Alert, AlertSeverity, AlertStatus } from '@/lib/types';
+import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@/components/ui/hover-card"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import api from '@/lib/auth';
+import { useAppDispatch } from '@/store/hook';
+import { updateAlert } from '@/store/slices/missionSlice';
+import { format } from 'date-fns';
+import { json2csv } from 'json-2-csv';
+
+
+
+function ActionsCell({ row }: { row: Row<Alert> }) {
+    const { copy } = useCopyToClipboard();
+    const handleCopyId = () => {
+        copy(row.original.id);
+        const message = `Alert ID successfully copied: ${row.original.id}`;
+        toast.info(message);
+    };
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button className="" size='icon' variant="ghost">
+                    <Ellipsis />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="bottom" align="end">
+                <DropdownMenuItem onClick={() => { }}>Edit</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleCopyId}>Copy ID</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive" onClick={() => { }}>
+                    Delete
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
+
+export default function AlertTable({ alerts = [] }: { alerts: Alert[] }) {
+
+    const dispatch = useAppDispatch();
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 5,
+    });
+    const [sorting, setSorting] = useState<SortingState>([{ id: 'name', desc: true }]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+    const [selectedRowsData, setSelectedRowsData] = useState<Alert[]>([]);
+    const filteredData = useMemo(() => {
+        return alerts.filter((item) => {
+
+            // Filter by search query (case-insensitive)
+            const searchLower = searchQuery.toLowerCase();
+            const matchesSearch =
+                !searchQuery ||
+                Object.values(item)
+                    .join(' ') // Combine all fields into a single string
+                    .toLowerCase()
+                    .includes(searchLower);
+
+            return matchesSearch;
+        });
+    }, [searchQuery, alerts]);
+
+    const downloadCSV = (data: any, fileName: string) => {
+        const csv = json2csv(data);
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', fileName + '.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
+
+    const columns = useMemo<ColumnDef<Alert>[]>(
+        () => [
+            {
+                accessorKey: 'id',
+                id: 'id',
+                header: () => <DataGridTableRowSelectAll />,
+                cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+                enableSorting: false,
+                size: 35,
+                meta: {
+                    headerClassName: '',
+                    cellClassName: '',
+                },
+                enableResizing: false,
+
+            },
+            {
+                accessorKey: 'title',
+                id: 'title',
+                header: ({ column }) => <DataGridColumnHeader title="Name" visibility={true} column={column} />,
+
+                cell: ({ row }) => {
+                    return (
+                        <HoverCard openDelay={100} closeDelay={100}>
+                            <HoverCardTrigger asChild >
+                                <div className="truncate">{row.original.title}</div>
+                            </HoverCardTrigger>
+                            <HoverCardContent className="w-80" >
+                                <p className="">
+                                    {row.original.title}
+                                </p>
+                            </HoverCardContent>
+                        </HoverCard>
+                    );
+                },
+                enableSorting: true,
+                enableHiding: false,
+                enableResizing: true,
+                maxSize: 120,
+            },
+            {
+                accessorKey: 'type',
+                id: 'type',
+                header: ({ column }) => <DataGridColumnHeader title="Type" visibility={true} column={column} />,
+                cell: ({ row }) => {
+                    return (row.original.type);
+                },
+
+                meta: {
+                    headerClassName: '',
+                    cellClassName: 'text-start',
+                },
+                enableSorting: true,
+                enableHiding: true,
+                enableResizing: true,
+                size: 80,
+            },
+            {
+                accessorKey: 'message',
+                id: 'message',
+                header: ({ column }) => <DataGridColumnHeader title="Message" visibility={true} column={column} />,
+                cell: ({ row }) => {
+                    return (
+                        <HoverCard openDelay={100} closeDelay={100}>
+                            <HoverCardTrigger asChild >
+                                <div className="truncate">{row.original.message}</div>
+                            </HoverCardTrigger>
+                            <HoverCardContent className="w-80" >
+                                <p className="">
+                                    {row.original.message}
+                                </p>
+                            </HoverCardContent>
+                        </HoverCard>
+                    );
+                },
+
+                meta: {
+                    headerClassName: '',
+                    cellClassName: 'text-start',
+                },
+                enableSorting: true,
+                enableHiding: true,
+                enableResizing: true,
+
+            },
+            {
+                accessorKey: 'severity',
+                id: 'severity',
+                header: ({ column }) => <DataGridColumnHeader title="Severity" visibility={true} column={column} />,
+                cell: ({ row }) => {
+                    const handleSeverityChange = async (value: AlertSeverity) => {
+                        try {
+                            const response = await api.put(`/api/alert/update/${row.original.id}`, {
+                                severity: value
+                            });
+                            console.log(response.data);
+                            if (response.status === 201) {
+                                toast.success("Severity updated successfully!");
+                                dispatch(updateAlert({ severity: value, id: row.original.id }));
+                            }
+                        } catch (error) {
+                            console.error('Error updating status:', error);
+                        }
+                    };
+                    return (
+                        <Select value={row.original.severity} onValueChange={handleSeverityChange}>
+                            <SelectTrigger className='w-26 px-1 text-xs' size='sm'>
+                                <SelectValue placeholder="Severity" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Object.values(AlertSeverity).map((severity) => (
+                                    <SelectItem
+                                        key={severity}
+                                        value={severity}
+                                    >
+                                        {severity}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    );
+                },
+
+                meta: {
+                    headerClassName: '',
+                    cellClassName: 'text-start',
+                },
+                enableSorting: true,
+                enableHiding: true,
+                enableResizing: true,
+                size: 80,
+
+            },
+            {
+                accessorKey: 'timestamp',
+                id: 'timestamp',
+                header: ({ column }) => <DataGridColumnHeader title="Timestamp" visibility={true} column={column} />,
+                cell: ({ row }) => {
+                    return (
+                        <div>{format(row.original.timestamp, 'yyyy-MM-dd HH:mm:ss')}</div>
+                    );
+                },
+                meta: {
+                    headerClassName: '',
+                    cellClassName: 'text-start',
+                },
+                enableSorting: true,
+                enableHiding: true,
+                enableResizing: true,
+                size: 100,
+
+            },
+            {
+                accessorKey: 'status',
+                id: 'status',
+                header: ({ column }) => <DataGridColumnHeader title="Status" visibility={true} column={column} />,
+                cell: ({ row }) => {
+                    const handleStatusChange = async (value: AlertStatus) => {
+                        try {
+                            const response = await api.put(`/api/alert/update/${row.original.id}`, {
+                                status: value
+                            });
+                            console.log(response.data);
+                            if (response.status === 201) {
+                                toast.success("Status updated successfully!");
+                                dispatch(updateAlert({ status: value, id: row.original.id }));
+                            }
+                        } catch (error) {
+                            console.error('Error updating status:', error);
+                        }
+                    };
+                    return (
+                        <Select value={row.original.status} onValueChange={handleStatusChange}>
+                            <SelectTrigger className='w-30 px-1 text-xs' size='sm'>
+                                <SelectValue placeholder="Status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Object.values(AlertStatus).map((status) => (
+                                    <SelectItem
+                                        key={status}
+                                        value={status}
+                                    >
+                                        {status}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    );
+                },
+
+                meta: {
+                    headerClassName: '',
+                    cellClassName: 'text-start',
+                },
+                enableSorting: true,
+                enableHiding: true,
+                enableResizing: true,
+                size: 70,
+
+            },
+
+            {
+                id: 'actions',
+                header: '',
+                cell: ({ row }) => <ActionsCell row={row} />,
+                size: 50,
+                enableSorting: false,
+                enableHiding: false,
+                enableResizing: false,
+            },
+        ],
+        [],
+    );
+
+    const [columnOrder, setColumnOrder] = useState<string[]>(columns.map((column) => column.id as string));
+
+    const table = useReactTable({
+        columns,
+        data: filteredData || [],
+        pageCount: Math.ceil((filteredData?.length || 0) / pagination.pageSize),
+        getRowId: (row: Alert) => row.id,
+        state: {
+            pagination,
+            sorting,
+            columnOrder,
+            rowSelection,
+        },
+        columnResizeMode: 'onChange',
+        onColumnOrderChange: setColumnOrder,
+        onPaginationChange: setPagination,
+        onSortingChange: setSorting,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        onRowSelectionChange: setRowSelection,
+
+    });
+
+    useEffect(() => {
+        const rows = table.getSelectedRowModel().flatRows.map((row) => row.original);
+        setSelectedRowsData(rows);
+    }, [rowSelection, table]);
+
+    return (
+        <DataGrid
+            table={table}
+            recordCount={filteredData?.length || 0}
+            tableClassNames={{
+                bodyRow: 'max-h-8'
+
+            }}
+
+            tableLayout={{
+                columnsPinnable: true,
+                columnsResizable: true,
+                columnsMovable: true,
+                columnsVisibility: true,
+                dense: true,
+            }}
+        >
+            <Card className="py-4 gap-2">
+                <CardHeader className="px-4">
+                    <CardTitle>
+                        <div className="flex items-center gap-2.5">
+                            <p className="text-lg flex items-center gap-2">
+                                <AlertTriangle className="w-5 h-5 text-amber-400" />
+                                Alerts
+                            </p>
+
+                            <div className="relative">
+                                <Search className="size-4 text-muted-foreground absolute start-3 top-1/2 -translate-y-1/2" />
+                                <Input
+                                    placeholder="Search..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="ps-9 w-80"
+                                />
+                                {searchQuery.length > 0 && (
+                                    <Button
+                                        size='icon'
+                                        variant="ghost"
+                                        className="absolute end-1.5 top-1/2 -translate-y-1/2 h-6 w-6"
+                                        onClick={() => setSearchQuery('')}
+                                    >
+                                        <X />
+                                    </Button>
+                                )}
+                            </div>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger>
+                                    <Button size='icon' variant="secondary">
+                                        <ChevronDownIcon className="size-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem onClick={() => downloadCSV(alerts, 'All_Alerts')}>Save all rows (csv)</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => downloadCSV(selectedRowsData, 'Selected_Alerts')}>Save selected rows (csv)</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => downloadCSV(filteredData, 'Filtered_Alerts')}>Save filtered rows (csv)</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='px-4 min-h-[81vh] overflow-y-auto relative'>
+                    <DataGridTable />
+                </CardContent>
+                <CardFooter>
+                    <DataGridPagination />
+                    <p>{selectedRowsData.length} row(s) selected</p>
+                </CardFooter>
+            </Card>
+        </DataGrid>
+    );
+}
+
+
