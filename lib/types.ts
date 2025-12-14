@@ -68,44 +68,9 @@ export enum ObjectiveType {
 
 
 
-export enum AlertType {
-  GEOFENCE_VIOLATION = "GEOFENCE_VIOLATION",
-  THREAT_DETECTED = "THREAT_DETECTED",
-  UNUSUAL_BEHAVIOR = "UNUSUAL_BEHAVIOR",
-  SENSOR_OFFLINE = "SENSOR_OFFLINE",
-  TRACK_LOST = "TRACK_LOST",
-  SYSTEM_ERROR = "SYSTEM_ERROR",
-  MANUAL = "MANUAL",
-}
 
-export enum AlertSeverity {
-  INFO = "INFO",
-  WARNING = "WARNING",
-  ERROR = "ERROR",
-  CRITICAL = "CRITICAL",
-}
 
-export enum AlertStatus {
-  NEW = "NEW",
-  ACKNOWLEDGED = "ACKNOWLEDGED",
-  INVESTIGATING = "INVESTIGATING",
-  RESOLVED = "RESOLVED",
-  DISMISSED = "DISMISSED",
-}
 
-export enum EventType {
-  MISSION_START = "MISSION_START",
-  MISSION_END = "MISSION_END",
-  TRACK_CREATED = "TRACK_CREATED",
-  TRACK_LOST = "TRACK_LOST",
-  ALERT_TRIGGERED = "ALERT_TRIGGERED",
-  SENSOR_ONLINE = "SENSOR_ONLINE",
-  SENSOR_OFFLINE = "SENSOR_OFFLINE",
-  USER_ACTION = "USER_ACTION",
-  SYSTEM_EVENT = "SYSTEM_EVENT",
-  GEOFENCE_CREATED = "GEOFENCE_CREATED",
-  ASSET_DEPLOYED = "ASSET_DEPLOYED",
-}
 
 // ===================================
 // HELPER TYPES
@@ -257,7 +222,9 @@ export interface Asset {
   // Relations (optional for queries)
   mission?: Mission;
   objectiveAllocations?: ObjectiveAllocation[];
+  files: File[];
   positions?: AssetPosition[];
+  alerts?: Alert[];
   sensors?: Sensor[];
 }
 
@@ -441,6 +408,32 @@ export interface Geofence {
   alerts?: Alert[];
 }
 
+export enum AlertType {
+  GEOFENCE_VIOLATION = "GEOFENCE_VIOLATION",
+  THREAT_DETECTED = "THREAT_DETECTED",
+  UNUSUAL_BEHAVIOR = "UNUSUAL_BEHAVIOR",
+  SENSOR_OFFLINE = "SENSOR_OFFLINE",
+  TRACK_FOUND = "TRACK_FOUND",
+  SYSTEM_ERROR = "SYSTEM_ERROR",
+  MANUAL = "MANUAL",
+  ASSET_OFFLINE = "ASSET_OFFLINE",
+}
+
+export enum AlertSeverity {
+  INFO = "INFO",
+  WARNING = "WARNING",
+  ERROR = "ERROR",
+  CRITICAL = "CRITICAL",
+}
+
+export enum AlertStatus {
+  NEW = "NEW",
+  ACKNOWLEDGED = "ACKNOWLEDGED",
+  INVESTIGATING = "INVESTIGATING",
+  RESOLVED = "RESOLVED",
+  DISMISSED = "DISMISSED",
+}
+
 export interface Alert {
   id: string;
   type: AlertType;
@@ -448,10 +441,12 @@ export interface Alert {
   status: AlertStatus;
   title: string;
   message: string;
-  missionId?: string;
+  missionId: string;
   trackId?: string;
   geofenceId?: string;
+  assetId?: string;
   userId?: string; // Assigned user
+  location?: Coordinates;
   timestamp: Date;
   acknowledgedAt?: Date;
   resolvedAt?: Date;
@@ -460,10 +455,11 @@ export interface Alert {
   updatedAt: Date;
 
   // Relations (optional for queries)
-  mission?: Mission;
+  mission: Mission;
   track?: Track;
   geofence?: Geofence;
   assignee?: User;
+  asset?: Asset;
 }
 
 export interface Annotation {
@@ -486,6 +482,21 @@ export interface Annotation {
   user?: User;
 }
 
+
+export enum EventType {
+  MISSION_START = "MISSION_START",
+  MISSION_END = "MISSION_END",
+  TRACK_CREATED = "TRACK_CREATED",
+  ALERT_TRIGGERED = "ALERT_TRIGGERED",
+  SENSOR_ONLINE = "SENSOR_ONLINE",
+  SENSOR_OFFLINE = "SENSOR_OFFLINE",
+  USER_ACTION = "USER_ACTION",
+  SYSTEM_EVENT = "SYSTEM_EVENT",
+  GEOFENCE_CREATED = "GEOFENCE_CREATED",
+  ASSET_DEPLOYED = "ASSET_DEPLOYED",
+}
+
+// TODO: Relate event to related actors
 export interface Event {
   id: string;
   type: EventType;
@@ -495,7 +506,10 @@ export interface Event {
   timestamp: Date;
   location?: Coordinates;
   severity?: string;
-  actor?: string; // User or system component
+  trackId?: string;
+  geofenceId?: string;
+  assetId?: string;
+  userId?: string; // Assigned user
   metadata?: Record<string, any>;
 
   // Relations (optional for queries)
