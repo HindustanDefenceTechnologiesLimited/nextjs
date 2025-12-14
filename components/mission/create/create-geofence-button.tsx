@@ -81,8 +81,8 @@ const CreateGeofenceButton = () => {
   const handleShapeTypeChange = (shapeType: "circle" | "rectangle") => {
     setForm((prev) => ({
       ...prev,
-      radius: shapeType === "circle" ? 0 : undefined,
       geometry: {
+        radius: shapeType === "circle" ? 0 : undefined,
         shapeType,
         coordinates: [],
       },
@@ -93,8 +93,8 @@ const CreateGeofenceButton = () => {
     form.geometry.shapeType === "rectangle"
       ? form.geometry.coordinates.length === 2
       : form.geometry.coordinates.length === 1 &&
-      typeof form.radius === "number" &&
-      form.radius > 0;
+      typeof form.geometry.radius === "number" &&
+      form.geometry.radius > 0;
 
 
   const handleSubmit = async () => {
@@ -301,8 +301,8 @@ const CreateGeofenceButton = () => {
                 onSelect={(lng, lat, radius) =>
                   setForm((prev) => ({
                     ...prev,
-                    radius,
                     geometry: {
+                      radius,
                       shapeType: "circle",
                       coordinates: [[lng, lat]],
                       center: { lng, lat },

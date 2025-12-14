@@ -395,7 +395,6 @@ export interface Geofence {
   type: GeofenceType;
   missionId: string;
   geometry: GeoJSONGeometry;
-  radius?: number; // meters (if circle)
   altitude?: number; // meters
   isActive: boolean;
   description?: string;
@@ -410,6 +409,8 @@ export interface Geofence {
 
 export enum AlertType {
   GEOFENCE_VIOLATION = "GEOFENCE_VIOLATION",
+  GEOFENCE_ENTRY= "GEOFENCE_ENTRY",
+  GEOFENCE_EXIT = "GEOFENCE_EXIT",
   THREAT_DETECTED = "THREAT_DETECTED",
   UNUSUAL_BEHAVIOR = "UNUSUAL_BEHAVIOR",
   SENSOR_OFFLINE = "SENSOR_OFFLINE",
@@ -442,12 +443,12 @@ export interface Alert {
   title: string;
   message: string;
   missionId: string;
+  timestamp: Date;
   trackId?: string;
   geofenceId?: string;
   assetId?: string;
   userId?: string; // Assigned user
   location?: Coordinates;
-  timestamp: Date;
   acknowledgedAt?: Date;
   resolvedAt?: Date;
   metadata?: Record<string, any>;

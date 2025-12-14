@@ -133,10 +133,10 @@ export default function GeofenceShapeLayer({ geofences }: Props) {
         geometry = rectangleToPolygon(g.geometry.coordinates);
       }
 
-      if (g.geometry.shapeType === "circle" && g.radius) {
+      if (g.geometry.shapeType === "circle" && g.geometry.radius) {
         geometry = circleToPolygon(
           g.geometry.coordinates[0] as [number, number],
-          g.radius
+          g.geometry.radius as number
         );
       }
 

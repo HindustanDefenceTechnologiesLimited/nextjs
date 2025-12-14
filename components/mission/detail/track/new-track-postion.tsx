@@ -40,6 +40,7 @@ const NewTrackPosition = ({ track, onCreate }: Props) => {
             const oldPositions = track.positions || []
             dispatch(updateTrack({ id: track.id, positions: [res.data.data, ...oldPositions ] }))
             onCreate(res.data.data);
+            setForm({ longitude: 0, latitude: 0, timestamp: new Date() })
             console.log(res.data.data)
         } catch (error) {
             console.log(error)
@@ -88,7 +89,7 @@ const NewTrackPosition = ({ track, onCreate }: Props) => {
                             <Label htmlFor="timestamp">Timestamp</Label>
                             <DateTimePicker
                                 onDateTimeChange={(date) => setForm({ ...form, timestamp: date })}
-                                defaultDate={new Date()}
+                                defaultDate={form.timestamp}
                             />
                         </div>
                     </div>

@@ -68,7 +68,7 @@ const TrackPositions = ({ track }: Props) => {
 
                     <AccordionContent className="max-h-80 overflow-y-auto ">
                         <div className='flex gap-1 w-full'>
-                            <NewTrackPosition track={track} onCreate={(newTrkPos) => console.log(newTrkPos)} />
+                            <NewTrackPosition track={track} onCreate={(newTrkPos) => console.log(newTrkPos)} key={`new-track-position-${positions.length}`} />
                             <Button size='sm' className='w-1/2' onClick={() => {
                                 dispatch(setRouteFocusEntity(track))
                                 dispatch(setRouteFocusData(currentTrack?.positions || []))
