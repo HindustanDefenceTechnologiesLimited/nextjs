@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,8 +15,8 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
-import { ColumnDef, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, Row, SortingState, useReactTable, } from '@tanstack/react-table';
-import { Ellipsis, Filter, ScanIcon, Search, UserRoundPlus, X } from 'lucide-react';
+import { ColumnDef, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, Row, RowSelectionState, SortingState, useReactTable, } from '@tanstack/react-table';
+import { ChevronDownIcon, Ellipsis, Filter, ScanIcon, Search, UserRoundPlus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Geofence } from '@/lib/types';
 import { useAppDispatch } from '@/store/hook';
@@ -28,6 +28,7 @@ import { PopoverClose } from '@radix-ui/react-popover';
 import { setMapData, setMapType } from '@/store/slices/mapSlice';
 import { usePathname, useRouter } from 'next/navigation';
 import { Switch } from "@/components/ui/switch"
+import { json2csv } from 'json-2-csv';
 
 
 
@@ -65,13 +66,15 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
 
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
-        pageSize: 5,
+        pageSize: 25,
     });
     const dispatch = useAppDispatch();
     const [sorting, setSorting] = useState<SortingState>([{ id: 'name', desc: true }]);
     const [searchQuery, setSearchQuery] = useState('');
     // const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
     const [isActive, setIsActive] = useState(true);
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+    const [selectedRowsData, setSelectedRowsData] = useState<Geofence[]>([]);
 
     const filteredData = useMemo(() => {
         return geofences.filter((item) => {
@@ -92,6 +95,18 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
     }, [searchQuery, isActive, geofences]);
 
 
+    const downloadCSV = (data: any, fileName: string) => {
+        const csv = json2csv(data);
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', fileName + '.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
 
 
     const columns = useMemo<ColumnDef<Geofence>[]>(
@@ -117,7 +132,7 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
 
                 cell: ({ row }) => {
                     return (
-                       row.original.name
+                        row.original.name
                     );
                 },
                 enableSorting: true,
@@ -148,7 +163,7 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
                 header: ({ column }) => <DataGridColumnHeader title="Geometry" visibility={true} column={column} />,
                 cell: ({ row }) => {
                     return (
-                       row.original.geometry.shapeType
+                        row.original.geometry.shapeType
                     );
                 },
 
@@ -206,6 +221,7 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
             pagination,
             sorting,
             columnOrder,
+            rowSelection
         },
         columnResizeMode: 'onChange',
         onColumnOrderChange: setColumnOrder,
@@ -215,7 +231,14 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        onRowSelectionChange: setRowSelection,
+
     });
+
+    useEffect(() => {
+        const rows = table.getSelectedRowModel().flatRows.map((row) => row.original);
+        setSelectedRowsData(rows);
+    }, [rowSelection, table]);
 
     return (
         <DataGrid
@@ -237,11 +260,12 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
             <Card className="py-4 gap-2">
                 <CardHeader className="px-4">
                     <CardTitle>
-                        <div className="flex items-center justify-between gap-2.5">
+                        <div className="flex items-center gap-2.5">
                             <p className='text-lg flex items-center gap-2'>
                                 <ScanIcon className='w-5 h-5' />
-                                Geofences</p>
-                            <div className="relative">
+                                Geofences
+                            </p>
+                            <div className="relative ml-auto">
                                 <Search className="size-4 text-muted-foreground absolute start-3 top-1/2 -translate-y-1/2" />
                                 <Input
                                     placeholder="Search..."
@@ -260,6 +284,18 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
                                     </Button>
                                 )}
                             </div>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger>
+                                    <Button size='icon' variant="secondary">
+                                        <ChevronDownIcon className="size-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem onClick={() => downloadCSV(geofences, 'All_Geofences')}>Save all rows (csv)</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => downloadCSV(selectedRowsData, 'Selected_Geofences')}>Save selected rows (csv)</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => downloadCSV(filteredData, 'Filtered_Geofences')}>Save filtered rows (csv)</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                             {/* <div className="flex items-center space-x-2">
                                 <Switch id="isActive" checked={isActive} onCheckedChange={(value) => setIsActive(value)} />
                                 <Label htmlFor="isActive">Active</Label>
@@ -267,11 +303,13 @@ export default function GeofenceTable({ geofences = [] }: { geofences: Geofence[
                         </div>
                     </CardTitle>
                 </CardHeader>
-               <CardContent className='px-4 max-h-[40vh] overflow-y-auto relative'>
-                        <DataGridTable />
+                <CardContent className='px-4 max-h-[40vh] overflow-y-auto relative'>
+                    <DataGridTable />
                 </CardContent>
                 <CardFooter>
                     <DataGridPagination />
+                    <p className="text-sm text-muted-foreground ml-4">{selectedRowsData.length} row(s) selected</p>
+
                 </CardFooter>
             </Card>
         </DataGrid>

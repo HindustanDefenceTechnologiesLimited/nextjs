@@ -66,7 +66,7 @@ export default function AlertTable({ alerts = [] }: { alerts: Alert[] }) {
     const dispatch = useAppDispatch();
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
-        pageSize: 5,
+        pageSize: 25,
     });
     const [sorting, setSorting] = useState<SortingState>([{ id: 'name', desc: true }]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -411,7 +411,7 @@ export default function AlertTable({ alerts = [] }: { alerts: Alert[] }) {
                 </CardContent>
                 <CardFooter>
                     <DataGridPagination />
-                    <p>{selectedRowsData.length} row(s) selected</p>
+                    <p className="text-sm text-muted-foreground ml-4">{selectedRowsData.length} row(s) selected</p>
                 </CardFooter>
             </Card>
         </DataGrid>

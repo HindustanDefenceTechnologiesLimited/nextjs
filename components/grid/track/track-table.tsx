@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,8 +15,8 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
-import { ColumnDef, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, Row, SortingState, useReactTable, } from '@tanstack/react-table';
-import { Ellipsis, Filter, RouteIcon, Search, UserRoundPlus, X } from 'lucide-react';
+import { ColumnDef, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, Row, RowSelectionState, SortingState, useReactTable, } from '@tanstack/react-table';
+import { ChevronDownIcon, Ellipsis, Filter, RouteIcon, Search, UserRoundPlus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Track } from '@/lib/types';
 import { useAppDispatch } from '@/store/hook';
@@ -28,6 +28,7 @@ import { Separator } from '@/components/ui/separator';
 import { PopoverClose } from '@radix-ui/react-popover';
 import { setMapData, setMapType } from '@/store/slices/mapSlice';
 import { usePathname, useRouter } from 'next/navigation';
+import { json2csv } from 'json-2-csv';
 
 
 
@@ -66,13 +67,15 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
 
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
-        pageSize: 5,
+        pageSize: 25,
     });
     const dispatch = useAppDispatch();
     const sidebarType = useSelector((state: RootState) => state.sidebar.type);
     const [sorting, setSorting] = useState<SortingState>([{ id: 'name', desc: true }]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+    const [selectedRowsData, setSelectedRowsData] = useState<Track[]>([]);
 
     const filteredData = useMemo(() => {
         return tracks.filter((item) => {
@@ -111,6 +114,19 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
         );
     };
 
+    const downloadCSV = (data: any, fileName: string) => {
+        const csv = json2csv(data);
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', fileName + '.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
     const columns = useMemo<ColumnDef<Track>[]>(
         () => [
             {
@@ -134,7 +150,8 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
 
                 cell: ({ row }) => {
                     return (
-                        <div className="font-medium text-foreground">{row.original.trackId}</div>
+                        // <div className="font-medium text-foreground">{row.original.trackId}</div>
+                        row.original.trackId
                     );
                 },
                 enableSorting: true,
@@ -147,9 +164,7 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                 header: ({ column }) => <DataGridColumnHeader title="Threat" visibility={true} column={column} />,
                 cell: ({ row }) => {
                     return (
-                        <div className="flex items-center gap-1.5">
-                            {row.original.threatLevel}
-                        </div>
+                        row.original.threatLevel
                     );
                 },
 
@@ -173,7 +188,7 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                         <div className="flex items-center gap-1.5">
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="ghost" size="sm" aria-label="Open Popover" onClick={(e) => { e.stopPropagation() }}>
+                                    <Button variant="ghost" size="sm" aria-label="Open Popover" className='font-normal underline' onClick={(e) => { e.stopPropagation() }}>
                                         {long && lat && `${long.toFixed(5)}, ${lat.toFixed(5)}`}
                                     </Button>
                                 </PopoverTrigger>
@@ -227,9 +242,7 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                 header: ({ column }) => <DataGridColumnHeader title="Type" visibility={true} column={column} />,
                 cell: ({ row }) => {
                     return (
-                        <div className="flex items-center gap-1.5">
-                            <div className="font-medium text-foreground">{row.original.type}</div>
-                        </div>
+                        row.original.type
                     );
                 },
 
@@ -249,9 +262,7 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                 header: ({ column }) => <DataGridColumnHeader title="Sub Type" visibility={true} column={column} />,
                 cell: ({ row }) => {
                     return (
-                        <div className="flex items-center gap-1.5">
-                            <div className="font-medium text-foreground">{row.original.classification?.subType}</div>
-                        </div>
+                        row.original.classification?.subType
                     );
                 },
                 meta: {
@@ -318,6 +329,7 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
             pagination,
             sorting,
             columnOrder,
+            rowSelection
         },
         columnResizeMode: 'onChange',
         onColumnOrderChange: setColumnOrder,
@@ -327,8 +339,15 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        onRowSelectionChange: setRowSelection,
+
     });
 
+
+    useEffect(() => {
+        const rows = table.getSelectedRowModel().flatRows.map((row) => row.original);
+        setSelectedRowsData(rows);
+    }, [rowSelection, table]);
     return (
         <DataGrid
             table={table}
@@ -356,7 +375,7 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                     <CardTitle>
                         <div className="flex items-center gap-2.5">
                             <p className="text-lg flex items-center gap-2">
-                                <RouteIcon className='w-5 h-5'/>
+                                <RouteIcon className='w-5 h-5' />
                                 Tracks</p>
                             <Popover>
                                 <PopoverTrigger asChild>
@@ -413,7 +432,18 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                                     </Button>
                                 )}
                             </div>
-
+                            <DropdownMenu>
+                                <DropdownMenuTrigger>
+                                    <Button size='icon' variant="secondary">
+                                        <ChevronDownIcon className="size-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem onClick={() => downloadCSV(tracks, 'All_Tracks')}>Save all rows (csv)</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => downloadCSV(selectedRowsData, 'Selected_Tracks')}>Save selected rows (csv)</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => downloadCSV(filteredData, 'Filtered_Tracks')}>Save filtered rows (csv)</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     </CardTitle>
                 </CardHeader>
@@ -422,6 +452,8 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
                 </CardContent>
                 <CardFooter>
                     <DataGridPagination />
+                    <p className="text-sm text-muted-foreground ml-4">{selectedRowsData.length} row(s) selected</p>
+
                 </CardFooter>
             </Card>
         </DataGrid>
