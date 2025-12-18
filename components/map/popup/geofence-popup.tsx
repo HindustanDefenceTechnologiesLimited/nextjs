@@ -144,7 +144,7 @@ const GeofencePopup = ({ geofence }: Props) => {
 
                             <div>
                                 <p className="text-muted-foreground">Radius</p>
-                                <p className="font-medium">{geo.radius ?? geofence.radius} m</p>
+                                <p className="font-medium">{geofence.geometry.radius ?? geofence.geometry.radius} m</p>
                             </div>
                         </>
                     )}

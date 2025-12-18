@@ -31,7 +31,8 @@ const layout = ({ children, params }: Props) => {
                         'alerts': true,
                         'sensors': true,
                         'geofences': true,
-                        'tracks': true
+                        'tracks': true,
+                        'annotations': true
                     }
                 );
                 dispatch(setMission(response.data.data as Mission));

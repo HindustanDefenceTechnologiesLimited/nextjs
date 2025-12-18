@@ -14,7 +14,8 @@ const MissionMap = (props: Props) => {
                 entites={{
                     tracks: mission.tracks || [],
                     geofences: mission.geofences || [],
-                    assets: mission.assets || []
+                    assets: mission.assets || [],
+                    annotations: mission.annotations || []
                 }}
             />
         </div>

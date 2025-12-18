@@ -137,7 +137,7 @@ export interface User {
   createdMissions?: Mission[];
   assignedAlerts?: Alert[];
   annotations?: Annotation[];
-  
+
 }
 
 export interface Mission {
@@ -409,7 +409,7 @@ export interface Geofence {
 
 export enum AlertType {
   GEOFENCE_VIOLATION = "GEOFENCE_VIOLATION",
-  GEOFENCE_ENTRY= "GEOFENCE_ENTRY",
+  GEOFENCE_ENTRY = "GEOFENCE_ENTRY",
   GEOFENCE_EXIT = "GEOFENCE_EXIT",
   THREAT_DETECTED = "THREAT_DETECTED",
   UNUSUAL_BEHAVIOR = "UNUSUAL_BEHAVIOR",
@@ -463,13 +463,27 @@ export interface Alert {
   asset?: Asset;
 }
 
+export enum AnnotationType {
+  MISSION = "MISSION",
+  TRACK = "TRACK",
+  ASSET = "ASSET",
+  SENSOR = "SENSOR",
+  GEOFENCE = "GEOFENCE",
+  MAP = "MAP"
+}
+
 export interface Annotation {
   id: string;
-  missionId?: string;
-  trackId?: string;
+  missionId: string;
   userId: string;
+  type: AnnotationType;
   title: string;
-  content: string;
+  content?: string;
+
+  assetId?: string;
+  geofenceId?: string;
+  trackId?: string;
+  sensorId?: string;
   location?: Coordinates;
   attachments: string[];
   tags: string[];
@@ -477,10 +491,13 @@ export interface Annotation {
   createdAt: Date;
   updatedAt: Date;
 
-  // Relations (optional for queries)
-  mission?: Mission;
+  mission: Mission;
   track?: Track;
   user?: User;
+  asset?: Asset;
+  geofence?: Geofence;
+  sensor?: Sensor;
+  files?: File[];
 }
 
 
@@ -546,7 +563,7 @@ export interface File {
   ownerId: string;
   createdAt: Date;
   updatedAt: Date;
-  
+
   // Relations
   owner: User;
   track?: Track | null;

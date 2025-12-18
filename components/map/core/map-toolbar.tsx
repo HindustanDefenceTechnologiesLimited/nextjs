@@ -1,10 +1,16 @@
 import { Button } from "../../ui/button";
-import { LocateFixedIcon } from "lucide-react";
+import { LocateFixedIcon, PlusIcon } from "lucide-react";
 import { useMap } from "./map-context";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useAppDispatch } from "@/store/hook";
 import { setMapData, setMapType, setRouteFocusData, setRouteFocusEntity } from "@/store/slices/mapSlice";
+import { useEffect, useState } from "react";
+import { set } from "date-fns";
+import { toast } from "sonner";
+import api from "@/lib/auth";
+import { title } from "process";
+import { addAnnotation } from "@/store/slices/missionSlice";
 
 type Props = {};
 
@@ -25,6 +31,37 @@ const MapToolbar = (props: Props) => {
       pitch: 0,
     });
   };
+  const handleAddAnnotation = () => {
+    map.getCanvas().style.cursor = 'crosshair';
+    toast.loading('Click on the map to add an annotation.', {
+      id: 'add-annotation',
+    });
+    map?.once("click", (e) => {
+      const { lng, lat } = e.lngLat;
+      map.getCanvas().style.removeProperty('cursor');
+      toast.dismiss('add-annotation')
+      createMapAnnotation(lng, lat)
+      return
+    })
+  }
+
+  const createMapAnnotation = async (lng: number, lat: number) => {
+    try {
+      const res = await api.post('/api/annotation/create', {
+        missionId: mission.id,
+        location: { lng, lat },
+        title: 'Untitled Annotation',
+        type: 'MAP',
+      })
+      if(res.data.success) {
+        toast.success("Annotation added successfully!");
+        dispatch(addAnnotation(res.data.data));
+      }
+    } catch (error) {
+      
+    }
+  }
+
   return (
     <div className="flex absolute top-2 left-2 z-9 backdrop-blur rounded-md gap-1 p-1">
       <Button
@@ -37,7 +74,7 @@ const MapToolbar = (props: Props) => {
       <Button
         size="sm"
         className="h-6 text-xs bg-background hover:bg-background/60 text-foreground"
-        onClick={()=>{
+        onClick={() => {
           dispatch(setMapType(null));
           dispatch(setMapData(null));
           dispatch(setRouteFocusData([]));
@@ -46,6 +83,16 @@ const MapToolbar = (props: Props) => {
         }}
       >
         Clear focus
+      </Button>
+      <Button
+        size="sm"
+        className="h-6 text-xs bg-background hover:bg-background/60 text-foreground"
+        onClick={() => {
+          handleAddAnnotation();
+        }}
+      >
+        <PlusIcon className="w-3 h-3" />
+        Annotate
       </Button>
     </div>
   );

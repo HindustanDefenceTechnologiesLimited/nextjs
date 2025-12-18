@@ -1,5 +1,5 @@
 // store/slices/missionSlice.ts
-import { Alert, Asset, Geofence, Mission, MissionStatus, Track } from '@/lib/types';
+import { Alert, Annotation, Asset, Geofence, Mission, MissionStatus, Track } from '@/lib/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 
@@ -50,6 +50,9 @@ const missionsSlice = createSlice({
     addAsset(state, action: PayloadAction<Asset>) {
       state.data.assets?.unshift(action.payload);
     },
+    addAnnotation(state, action: PayloadAction<Annotation>) {
+      state.data.annotations?.unshift(action.payload);
+    },
     updateAsset(state, action: PayloadAction<Partial<Asset> & { id: string }>) {
       const assetId = action.payload.id;
       state.data.assets = state.data.assets?.map((asset) => {
@@ -95,5 +98,5 @@ const missionsSlice = createSlice({
   },
 });
 
-export const { setMission, setLoading, setError, updateTrack, addGeofence, deleteGeofence, updateMission, addTrack, addAsset, updateAsset, updateAlert } = missionsSlice.actions;
+export const { setMission, setLoading, setError, updateTrack, addGeofence, deleteGeofence, updateMission, addTrack, addAsset, updateAsset, updateAlert, addAnnotation } = missionsSlice.actions;
 export default missionsSlice.reducer;
