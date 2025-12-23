@@ -1,5 +1,5 @@
 import { Button } from "../../ui/button";
-import { LocateFixedIcon, PlusIcon } from "lucide-react";
+import { LocateFixedIcon, MessageCirclePlusIcon, PlusIcon } from "lucide-react";
 import { useMap } from "./map-context";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -18,6 +18,7 @@ const MapToolbar = (props: Props) => {
   const map = useMap();
   const mission = useSelector((state: RootState) => state.mission.data);
   const dispatch = useAppDispatch();
+  const [addAnnotationClicked, setAddAnnotationClicked] = useState(false);
   const handleResetMapCenter = () => {
     if (!mission.mapCoordinates) return;
     map?.flyTo({
@@ -32,6 +33,7 @@ const MapToolbar = (props: Props) => {
     });
   };
   const handleAddAnnotation = () => {
+    setAddAnnotationClicked(true);
     map.getCanvas().style.cursor = 'crosshair';
     toast.loading('Click on the map to add an annotation.', {
       id: 'add-annotation',
@@ -41,6 +43,7 @@ const MapToolbar = (props: Props) => {
       map.getCanvas().style.removeProperty('cursor');
       toast.dismiss('add-annotation')
       createMapAnnotation(lng, lat)
+      setAddAnnotationClicked(false)
       return
     })
   }
@@ -53,12 +56,12 @@ const MapToolbar = (props: Props) => {
         title: 'Untitled Annotation',
         type: 'MAP',
       })
-      if(res.data.success) {
+      if (res.data.success) {
         toast.success("Annotation added successfully!");
         dispatch(addAnnotation(res.data.data));
       }
     } catch (error) {
-      
+
     }
   }
 
@@ -79,7 +82,6 @@ const MapToolbar = (props: Props) => {
           dispatch(setMapData(null));
           dispatch(setRouteFocusData([]));
           dispatch(setRouteFocusEntity(null));
-
         }}
       >
         Clear focus
@@ -87,11 +89,10 @@ const MapToolbar = (props: Props) => {
       <Button
         size="sm"
         className="h-6 text-xs bg-background hover:bg-background/60 text-foreground"
-        onClick={() => {
-          handleAddAnnotation();
-        }}
+        onClick={handleAddAnnotation}
+        disabled={addAnnotationClicked}
       >
-        <PlusIcon className="w-3 h-3" />
+        <MessageCirclePlusIcon className="w-3 h-3" />
         Annotate
       </Button>
     </div>

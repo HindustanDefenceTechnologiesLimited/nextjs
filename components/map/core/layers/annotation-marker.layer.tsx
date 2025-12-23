@@ -4,6 +4,7 @@ import maplibregl from "maplibre-gl";
 import { Annotation } from "@/lib/types";
 import { useMap } from "../map-context";
 import ReduxProvider from "@/components/provider/redux-provider";
+import AnnotationPopup from "../../popup/annotation-popup";
 
 type Props = {
   annotations: Annotation[];
@@ -19,21 +20,18 @@ export default function AnnotationMarkerLayer({ annotations }: Props) {
     if (!map) return;
 
     const run = () => {
-      cleanup();
       init();
     };
 
-    // If style is not loaded, wait for it
     if (!map.isStyleLoaded()) {
       map.once("load", run);
-      return () => map.off("load", run);
+    } else {
+      run();
     }
 
-    // Style already loaded → run immediately
-    run();
-
     return () => {
-      // queueMicrotask(() => cleanup());
+      cleanup();
+      map.off("load", run);
     };
   }, [annotations, map]);
 
@@ -48,7 +46,7 @@ export default function AnnotationMarkerLayer({ annotations }: Props) {
       const root = createRoot(container);
       root.render(
         <ReduxProvider>
-          <p className="text-white">{annotation.title}</p>
+          <AnnotationPopup annotation={annotation} />
         </ReduxProvider>
       );
 
@@ -72,15 +70,16 @@ export default function AnnotationMarkerLayer({ annotations }: Props) {
      Cleanup markers + roots
   -------------------------- */
   function cleanup() {
-    try {
-      rootsRef.current.forEach((r) => r.unmount());
-      markersRef.current.forEach((m) => m.remove());
-    } catch (e) {
-      // ignore cleanup errors when map is already destroyed
-    }
+    const roots = rootsRef.current;
+    const markers = markersRef.current;
 
     rootsRef.current = [];
     markersRef.current = [];
+
+    queueMicrotask(() => {
+      roots.forEach((r) => r.unmount());
+      markers.forEach((m) => m.remove());
+    });
   }
 
   return null;

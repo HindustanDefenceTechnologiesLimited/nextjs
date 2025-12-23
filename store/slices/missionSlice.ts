@@ -1,7 +1,14 @@
 // store/slices/missionSlice.ts
-import { Alert, Annotation, Asset, Geofence, Mission, MissionStatus, Track } from '@/lib/types';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
+import {
+  Alert,
+  Annotation,
+  Asset,
+  Geofence,
+  Mission,
+  MissionStatus,
+  Track,
+} from "@/lib/types";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type MissionState = {
   data: Mission;
@@ -11,24 +18,23 @@ type MissionState = {
 
 const initialState: MissionState = {
   data: {
-    id: '',
-    name: '',
-    type: '',
-    startTime: '',
+    id: "",
+    name: "",
+    type: "",
+    startTime: "",
     status: MissionStatus.NEW,
-    createdById: '',
-    createdAt: '',
-    updatedAt: '',
+    createdById: "",
+    createdAt: "",
+    updatedAt: "",
   },
   loading: false,
   error: null,
 };
 
 const missionsSlice = createSlice({
-  name: 'mission',
+  name: "mission",
   initialState,
   reducers: {
-
     setMission(state, action: PayloadAction<Mission>) {
       state.data = action.payload;
     },
@@ -53,13 +59,16 @@ const missionsSlice = createSlice({
     addAnnotation(state, action: PayloadAction<Annotation>) {
       state.data.annotations?.unshift(action.payload);
     },
+    addGeofence(state, action: PayloadAction<Geofence>) {
+      state.data.geofences?.push(action.payload);
+    },
     updateAsset(state, action: PayloadAction<Partial<Asset> & { id: string }>) {
       const assetId = action.payload.id;
       state.data.assets = state.data.assets?.map((asset) => {
         if (asset.id === assetId) {
           return {
             ...asset,
-            ...action.payload,  
+            ...action.payload,
           };
         }
         return asset;
@@ -71,7 +80,7 @@ const missionsSlice = createSlice({
         if (track.id === trackId) {
           return {
             ...track,
-            ...action.payload,  
+            ...action.payload,
           };
         }
         return track;
@@ -83,20 +92,54 @@ const missionsSlice = createSlice({
         if (alert.id === alertId) {
           return {
             ...alert,
-            ...action.payload,  
+            ...action.payload,
           };
         }
         return alert;
       });
     },
-    addGeofence(state, action: PayloadAction<Geofence>) {
-      state.data.geofences?.push(action.payload);
+    updateAnnotation(
+      state,
+      action: PayloadAction<Partial<Annotation> & { id: string }>
+    ) {
+      const annotationId = action.payload.id;
+      state.data.annotations = state.data.annotations?.map((annotation) => {
+        if (annotation.id === annotationId) {
+          return {
+            ...annotation,
+            ...action.payload,
+          };
+        }
+        return annotation;
+      });
     },
     deleteGeofence(state, action: PayloadAction<string>) {
-      state.data.geofences = state.data.geofences?.filter((geofence) => geofence.id !== action.payload);
+      state.data.geofences = state.data.geofences?.filter(
+        (geofence) => geofence.id !== action.payload
+      );
+    },
+    deleteAnnotation(state, action: PayloadAction<string>) {
+      state.data.annotations = state.data.annotations?.filter(
+        (annotation) => annotation.id !== action.payload
+      );
     },
   },
 });
 
-export const { setMission, setLoading, setError, updateTrack, addGeofence, deleteGeofence, updateMission, addTrack, addAsset, updateAsset, updateAlert, addAnnotation } = missionsSlice.actions;
+export const {
+  setMission,
+  setLoading,
+  setError,
+  updateTrack,
+  addGeofence,
+  deleteGeofence,
+  updateMission,
+  addTrack,
+  addAsset,
+  updateAsset,
+  updateAlert,
+  addAnnotation,
+  updateAnnotation,
+  deleteAnnotation,
+} = missionsSlice.actions;
 export default missionsSlice.reducer;

@@ -27,7 +27,7 @@ export default function TrackPopup({ track }: Props) {
       <PopoverTrigger asChild>
         <button className="p-2 cursor-pointer relative">
           <p className="flex bg-gray-100 text-xs text-gray-900 gap-1 rounded absolute -top-4 left-4 pr-2 text-start truncate -z-2">
-            <div className={cn('w-2',{
+            <span className={cn('w-2',{
               "bg-green-600": track.threatLevel === "NONE",
               "bg-yellow-500": track.threatLevel === "LOW",
               "bg-orange-500": track.threatLevel === "MEDIUM",

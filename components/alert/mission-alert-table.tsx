@@ -68,7 +68,7 @@ export default function AlertTable({ alerts = [] }: { alerts: Alert[] }) {
         pageIndex: 0,
         pageSize: 25,
     });
-    const [sorting, setSorting] = useState<SortingState>([{ id: 'name', desc: true }]);
+    const [sorting, setSorting] = useState<SortingState>([{ id: 'title', desc: true }]);
     const [searchQuery, setSearchQuery] = useState('');
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
     const [selectedRowsData, setSelectedRowsData] = useState<Alert[]>([]);
