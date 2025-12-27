@@ -6,6 +6,7 @@ import {
   Geofence,
   Mission,
   MissionStatus,
+  Objective,
   Track,
 } from "@/lib/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -62,6 +63,9 @@ const missionsSlice = createSlice({
     addGeofence(state, action: PayloadAction<Geofence>) {
       state.data.geofences?.push(action.payload);
     },
+    addObjective(state, action: PayloadAction<Objective>) {
+      state.data.objectives?.push(action.payload);
+    },
     updateAsset(state, action: PayloadAction<Partial<Asset> & { id: string }>) {
       const assetId = action.payload.id;
       state.data.assets = state.data.assets?.map((asset) => {
@@ -113,6 +117,18 @@ const missionsSlice = createSlice({
         return annotation;
       });
     },
+    updateObjective(state, action: PayloadAction<Partial<Objective>>) {
+      const objectiveId = action.payload.id;
+      state.data.objectives = state.data.objectives?.map((objective) => {
+        if (objective.id === objectiveId) {
+          return {
+            ...objective,
+            ...action.payload,
+          };
+        }
+        return objective;
+      });
+    },
     deleteGeofence(state, action: PayloadAction<string>) {
       state.data.geofences = state.data.geofences?.filter(
         (geofence) => geofence.id !== action.payload
@@ -141,5 +157,7 @@ export const {
   addAnnotation,
   updateAnnotation,
   deleteAnnotation,
+  updateObjective,
+  addObjective,
 } = missionsSlice.actions;
 export default missionsSlice.reducer;

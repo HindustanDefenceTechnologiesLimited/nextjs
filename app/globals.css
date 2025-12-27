@@ -144,3 +144,7 @@
   background: #555;
 }
 
+body {
+    /* overflow-y: auto; Show scrollbar only when needed */
+    scrollbar-gutter: stable; /* Reserve space for the scrollbar to prevent layout shifts */
+}

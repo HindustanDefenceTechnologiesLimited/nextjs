@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { Button } from '../ui/button'
-import { AlertTriangleIcon, File, Map, Table2 } from 'lucide-react'
+import { AlertTriangleIcon, File, ListTodoIcon, Map, Table2 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 type Props = {}
@@ -27,7 +27,11 @@ const Header = (props: Props) => {
                         <AlertTriangleIcon className='w-4 h-4' /> Alerts
                     </Button>
                 </Link>
-
+                <Link href={'/mission/' + missionPath[2] + '/objective'}>
+                    <Button variant={missionPath[3] === 'objective' ? 'secondary' : 'ghost'} size='sm' className='text-sm font-normal'>
+                        <ListTodoIcon className='w-4 h-4' /> Objectives
+                    </Button>
+                </Link>
             </div>
         </div>
     )

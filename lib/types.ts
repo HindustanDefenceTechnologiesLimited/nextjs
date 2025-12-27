@@ -53,16 +53,7 @@ export enum SensorStatus {
 
 
 
-export enum ObjectiveType {
-  REACH_LOCATION = "REACH_LOCATION",
-  TASK = "TASK",
-  SURVEY = "SURVEY",
-  RESCUE = "RESCUE",
-  PATROL = "PATROL",
-  SECURITY = "SECURITY",
-  RECONNAISSANCE = "RECONNAISSANCE",
-  SURVEILLANCE = "SURVEILLANCE",
-}
+
 
 
 
@@ -244,11 +235,28 @@ export interface AssetPosition {
   asset?: Asset;
 }
 
+export enum ObjectiveType {
+  REACH_LOCATION = "REACH_LOCATION",
+  TASK = "TASK",
+  SURVEY = "SURVEY",
+  RESCUE = "RESCUE",
+  PATROL = "PATROL",
+  SECURITY = "SECURITY",
+  RECONNAISSANCE = "RECONNAISSANCE",
+  SURVEILLANCE = "SURVEILLANCE",
+}
+export enum ObjectiveStatus {
+  NEW = "NEW",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+}
 export interface Objective {
   id: string;
   missionId: string;
   title: string;
   type: ObjectiveType;
+  status: ObjectiveStatus;
   description?: string;
   location?: Coordinates & { radius?: number };
   metadata?: Record<string, any>;
