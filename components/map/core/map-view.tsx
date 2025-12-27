@@ -7,7 +7,7 @@ import { MapContext } from "./map-context";
 import FocusMarkerLayer from "./layers/focus-marker-layer";
 import TrackMarkerLayer from "./layers/track-marker-layer";
 import MapToolbar from "./map-toolbar";
-import { Annotation, Asset, Geofence, Track } from "@/lib/types";
+import { Annotation, Asset, Geofence, Objective, Track } from "@/lib/types";
 import RouteLayer from "./layers/route-layer";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -15,13 +15,16 @@ import GeofenceShapeLayer from "./layers/geofence-shape-layer";
 import { dark_style } from "./style";
 import AssetMarkerLayer from "./layers/asset-marker-layer";
 import AnnotationMarkerLayer from "./layers/annotation-marker.layer";
+import ObjectiveMarkerLayer from "./layers/objective-marker.layer";
+import OptionsLayer from "./layers/options-layer";
 
 type Props = {
     entites: {
         tracks: Track[];
         geofences: Geofence[];
         assets: Asset[];
-        annotations: Annotation[]
+        annotations: Annotation[];
+        objectives: Objective[]
     };
 };
 
@@ -71,8 +74,11 @@ export default function SimpleMap({ entites }: Props) {
             {/* ✅ layers render only after map is ready */}
             {ready && (
                 <MapContext.Provider value={mapRef.current!}>
+                    <OptionsLayer />
+                    <ObjectiveMarkerLayer objectives={entites.objectives}/>
                     <AnnotationMarkerLayer annotations={entites.annotations}/>
                     <RouteLayer />
+
                     <MapToolbar />
                     <FocusMarkerLayer />
                     <AssetMarkerLayer assets={entites.assets} />

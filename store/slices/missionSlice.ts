@@ -139,6 +139,11 @@ const missionsSlice = createSlice({
         (annotation) => annotation.id !== action.payload
       );
     },
+    deleteObjective(state, action: PayloadAction<string>) {
+      state.data.objectives = state.data.objectives?.filter(
+        (objective) => objective.id !== action.payload
+      );
+    }
   },
 });
 
@@ -159,5 +164,6 @@ export const {
   deleteAnnotation,
   updateObjective,
   addObjective,
+  deleteObjective,
 } = missionsSlice.actions;
 export default missionsSlice.reducer;

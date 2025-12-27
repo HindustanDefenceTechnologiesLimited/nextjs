@@ -1,5 +1,5 @@
 import { Button } from "../../ui/button";
-import { LocateFixedIcon, MessageCirclePlusIcon, PlusIcon } from "lucide-react";
+import { CircleCheckBigIcon, LocateFixedIcon, MessageCirclePlusIcon, PlusIcon } from "lucide-react";
 import { useMap } from "./map-context";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -10,7 +10,8 @@ import { set } from "date-fns";
 import { toast } from "sonner";
 import api from "@/lib/auth";
 import { title } from "process";
-import { addAnnotation } from "@/store/slices/missionSlice";
+import { addAnnotation, addObjective } from "@/store/slices/missionSlice";
+import { ObjectiveStatus, ObjectiveType } from "@/lib/types";
 
 type Props = {};
 
@@ -18,7 +19,7 @@ const MapToolbar = (props: Props) => {
   const map = useMap();
   const mission = useSelector((state: RootState) => state.mission.data);
   const dispatch = useAppDispatch();
-  const [addAnnotationClicked, setAddAnnotationClicked] = useState(false);
+  const [addElementClicked, setAddElementClicked] = useState(false);
   const handleResetMapCenter = () => {
     if (!mission.mapCoordinates) return;
     map?.flyTo({
@@ -32,22 +33,40 @@ const MapToolbar = (props: Props) => {
       pitch: 0,
     });
   };
-  const handleAddAnnotation = () => {
-    setAddAnnotationClicked(true);
+  // const handleAddAnnotation = () => {
+  //   setAddElementClicked(true);
+  //   map.getCanvas().style.cursor = 'crosshair';
+  //   toast.loading('Click on the map to add an annotation.', {
+  //     id: 'add-annotation',
+  //   });
+  //   map?.once("click", (e) => {
+  //     const { lng, lat } = e.lngLat;
+  //     map.getCanvas().style.removeProperty('cursor');
+  //     toast.dismiss('add-annotation')
+  //     createMapAnnotation(lng, lat)
+  //     setAddElementClicked(false)
+  //     return
+  //   })
+  // }
+  const handleAddMapElement = (type: 'annotation' | 'objective') => {
+    setAddElementClicked(true);
     map.getCanvas().style.cursor = 'crosshair';
-    toast.loading('Click on the map to add an annotation.', {
-      id: 'add-annotation',
+    toast.loading('Click on the map to add an ' + type, {
+      id: 'add-' + type,
     });
     map?.once("click", (e) => {
       const { lng, lat } = e.lngLat;
       map.getCanvas().style.removeProperty('cursor');
-      toast.dismiss('add-annotation')
-      createMapAnnotation(lng, lat)
-      setAddAnnotationClicked(false)
+      toast.dismiss('add-' + type)
+      if (type === 'annotation') {
+        createMapAnnotation(lng, lat)
+      } else if (type === 'objective') {
+        createMapObjective(lng, lat)
+      }
+      setAddElementClicked(false)
       return
     })
   }
-
   const createMapAnnotation = async (lng: number, lat: number) => {
     try {
       const res = await api.post('/api/annotation/create', {
@@ -61,10 +80,28 @@ const MapToolbar = (props: Props) => {
         dispatch(addAnnotation(res.data.data));
       }
     } catch (error) {
-
+      toast.error("Failed to add annotation");
     }
   }
+  const createMapObjective = async (lng: number, lat: number) => {
+    try {
+      const res = await api.post('/api/objective/create', {
+        missionId: mission.id,
+        location: { lng, lat },
+        title: 'Untitled Objective',
+        type: ObjectiveType.TASK,
+        status: ObjectiveStatus.NEW
+      })
+      if (res.data.success) {
+        toast.success("Objective added successfully!");
+        dispatch(addObjective(res.data.data));
 
+      }
+      
+    } catch (error) {
+      
+    }
+  }
   return (
     <div className="flex absolute top-2 left-2 z-9 backdrop-blur rounded-md gap-1 p-1">
       <Button
@@ -89,11 +126,20 @@ const MapToolbar = (props: Props) => {
       <Button
         size="sm"
         className="h-6 text-xs bg-background hover:bg-background/60 text-foreground"
-        onClick={handleAddAnnotation}
-        disabled={addAnnotationClicked}
+        onClick={() => handleAddMapElement('annotation')}
+        disabled={addElementClicked}
       >
         <MessageCirclePlusIcon className="w-3 h-3" />
         Annotate
+      </Button>
+      <Button
+        size="sm"
+        className="h-6 text-xs bg-background hover:bg-background/60 text-foreground"
+        onClick={() => handleAddMapElement('objective')}
+        disabled={addElementClicked}
+      >
+        <CircleCheckBigIcon className="w-3 h-3" />
+        Objective
       </Button>
     </div>
   );
