@@ -1,7 +1,7 @@
 "use client" // Added "use client" as is common for components using interactive hooks/state
 
 import { RootState } from "@/store/store";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/store/hook";
 import { Mission } from "@/lib/types";
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
@@ -82,9 +82,9 @@ const MissionCardSkeleton = () => (
 // --- Main Component ---
 const MissionGridList = (props: Props) => {
     // Redux Selectors
-    const missions = useSelector((state: RootState) => state.missions.items);
-    const loading = useSelector((state: RootState) => state.missions.loading);
-    const error = useSelector((state: RootState) => state.missions.error);
+    const missions = useAppSelector((state: RootState) => state.missions.items);
+    const loading = useAppSelector((state: RootState) => state.missions.loading);
+    const error = useAppSelector((state: RootState) => state.missions.error);
     const [searchQuery, setSearchQuery] = useState("");
     
     // 1. Error Toast Effect using sonner's direct toast function

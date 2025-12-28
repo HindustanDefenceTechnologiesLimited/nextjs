@@ -2,8 +2,7 @@ import { Alert } from '@/lib/types'
 import React, { useEffect } from 'react'
 import AlertTable from './mission-alert-table'
 import { usePathname } from 'next/navigation'
-import { useSelector } from 'react-redux'
-import { useAppDispatch } from '@/store/hook'
+import { useAppDispatch, useAppSelector } from '@/store/hook'
 import api from '@/lib/auth'
 import { updateMission } from '@/store/slices/missionSlice'
 import { RootState } from '@/store/store'
@@ -14,7 +13,7 @@ import { RotateCwIcon } from 'lucide-react'
 const MissionAlertgrid = () => {
     const pathname = usePathname()
     const missionId = pathname.split('/')[2];
-    const mission = useSelector((state: RootState) => state.mission.data);
+    const mission = useAppSelector((state: RootState) => state.mission.data);
     const [loading, setLoading] = React.useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {

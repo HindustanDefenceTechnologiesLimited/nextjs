@@ -1,7 +1,7 @@
 import { Asset, AssetStatus, AssetType } from '@/lib/types'
 import React from 'react'
 import DetailLayout from '../detail-layout'
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/store/hook';
 import { RootState } from '@/store/store';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -20,7 +20,7 @@ import AssetPositions from './asset-positions';
 
 
 const AssetDetail = () => {
-  const sidebarData = useSelector((state: RootState) => state.sidebar.data) as Asset;
+  const sidebarData = useAppSelector((state: RootState) => state.sidebar.data) as Asset;
   const [formData, setFormData] = React.useState<Asset>({...sidebarData, positions: undefined});
   const [loading, setLoading] = React.useState(false);
   const isDirty =  JSON.stringify(sidebarData) !== JSON.stringify(formData);

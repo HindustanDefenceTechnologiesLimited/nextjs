@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import { useMap } from "../map-context";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/store/hook";
 import { RootState } from "@/store/store";
 import { Asset, AssetPosition, Geofence, TrackPosition } from "@/lib/types";
 
@@ -71,8 +71,8 @@ export default function FocusMarkerLayer() {
   const map = useMap();
   const markerRef = useRef<maplibregl.Marker | null>(null);
 
-  const focusType = useSelector((state: RootState) => state.map.type);
-  const focusData = useSelector((state: RootState) => state.map.data);
+  const focusType = useAppSelector((state: RootState) => state.map.type);
+  const focusData = useAppSelector((state: RootState) => state.map.data);
 
   useEffect(() => {
     if (!map) return;

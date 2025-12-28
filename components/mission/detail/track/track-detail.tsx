@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/store/hook";
 import { RootState } from "@/store/store";
 import { ThreatLevel, Track, TrackStatus } from "@/lib/types";
 import { Input } from "@/components/ui/input";
@@ -139,7 +139,7 @@ const buildMergedAttributes = (
 /** Props and main component */
 
 const TrackDetail: React.FC = () => {
-  const sidebarData = useSelector((s: RootState) => s.sidebar.data) as Track | null;
+  const sidebarData = useAppSelector((s: RootState) => s.sidebar.data) as Track | null;
   const [originalTrack, setOriginalTrack] = useState<Track | null>(
     sidebarData ? safeClone(sidebarData) : null
   );

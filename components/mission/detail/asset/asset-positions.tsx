@@ -4,7 +4,7 @@ import { useAppDispatch } from '@/store/hook'
 import { setError, setLoading, updateTrack } from '@/store/slices/missionSlice';
 import { RootState } from '@/store/store';
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/store/hook';
 import {
     Accordion,
     AccordionContent,
@@ -24,7 +24,7 @@ const AssetPositions = ({ asset }: Props) => {
     const dispatch = useAppDispatch();
 
     // Always get the LIVE track from redux
-    const currentAsset = useSelector((state: RootState) =>
+    const currentAsset = useAppSelector((state: RootState) =>
         state.mission.data.assets?.find((a) => a.id === asset.id)
     );
 

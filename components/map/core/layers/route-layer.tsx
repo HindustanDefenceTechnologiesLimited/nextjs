@@ -1,15 +1,15 @@
 import { useEffect } from "react";
 import maplibregl, { GeoJSONSource } from "maplibre-gl";
 import { useMap } from "../map-context";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/store/hook";
 import { RootState } from "@/store/store";
 
 export default function RouteLayer() {
   const map = useMap();
-  const positions = useSelector(
+  const positions = useAppSelector(
     (state: RootState) => state.map.routeFocusData
   );
-  const positionEntity = useSelector(
+  const positionEntity = useAppSelector(
     (state: RootState) => state.map.routeFocusEntity
   );
 

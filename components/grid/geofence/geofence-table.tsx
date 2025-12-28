@@ -21,7 +21,7 @@ import { toast } from 'sonner';
 import { Geofence } from '@/lib/types';
 import { useAppDispatch } from '@/store/hook';
 import { setSidebarData, setSidebarType } from '@/store/slices/sidebarSlice';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/store/hook';
 import { RootState } from '@/store/store';
 import { Separator } from '@/components/ui/separator';
 import { PopoverClose } from '@radix-ui/react-popover';

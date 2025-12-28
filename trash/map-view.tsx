@@ -7,7 +7,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import TrackPopup from "../components/map/popup/track-popup";
 import { Track, TrackPosition } from "@/lib/types";
 import MapToolbar from "../components/map/core/map-toolbar";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/store/hook";
 import { RootState } from "@/store/store";
 type Props = {
     entites: {
@@ -18,9 +18,9 @@ type Props = {
 export default function SimpleMap({ entites }: Props) {
     const mapContainer = useRef<HTMLDivElement>(null);
     const mapRef = useRef<maplibregl.Map | null>(null);
-    const mission = useSelector((state: RootState) => state.mission.data);
-    const mapFocusType = useSelector((state: RootState) => state.map.type);
-    const mapFocusData = useSelector((state: RootState) => state.map.data);
+    const mission = useAppSelector((state: RootState) => state.mission.data);
+    const mapFocusType = useAppSelector((state: RootState) => state.map.type);
+    const mapFocusData = useAppSelector((state: RootState) => state.map.data);
     const focusMarkerRef = useRef<maplibregl.Marker | null>(null);
 
     // console.log(mission.mapCoordinates)

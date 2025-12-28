@@ -2,7 +2,6 @@
 
 import { RootState } from "@/store/store";
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
 import { Separator } from "../ui/separator";
 import MissionDetailSidebar from "./mission-detail-sidebar";
 import AssetDetail from "./detail/asset/asset-detail";
@@ -21,12 +20,13 @@ import { Label } from "../ui/label";
 import { Checkbox } from "../ui/checkbox";
 import GeofenceList from "./list/geofence-list";
 import AssetList from "./list/asset-list";
+import { useAppSelector } from "@/store/hook";
 type Props = {};
 
 const MissionLeftSidebar = (props: Props) => {
-  const mission = useSelector((state: RootState) => state.mission.data);
-  const sidebarType = useSelector((state: RootState) => state.sidebar.type);
-  const sidebarData = useSelector((state: RootState) => state.sidebar.data);
+  const mission = useAppSelector((state: RootState) => state.mission.data);
+  const sidebarType = useAppSelector((state: RootState) => state.sidebar.type);
+  const sidebarData = useAppSelector((state: RootState) => state.sidebar.data);
 
   if (sidebarType == null) {
     return (
@@ -64,7 +64,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 };
 
 const EntityList = () => {
-  const mission = useSelector((state: RootState) => state.mission.data);
+  const mission = useAppSelector((state: RootState) => state.mission.data);
   const [renderEntities, setRenderEntities] = React.useState<string[]>([
     "tracks",
     "assets",

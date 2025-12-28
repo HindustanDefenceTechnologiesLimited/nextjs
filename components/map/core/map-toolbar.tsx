@@ -1,7 +1,7 @@
 import { Button } from "../../ui/button";
 import { CircleCheckBigIcon, LocateFixedIcon, MessageCirclePlusIcon, PlusIcon } from "lucide-react";
 import { useMap } from "./map-context";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/store/hook";
 import { RootState } from "@/store/store";
 import { useAppDispatch } from "@/store/hook";
 import { setMapData, setMapType, setRouteFocusData, setRouteFocusEntity } from "@/store/slices/mapSlice";
@@ -17,7 +17,7 @@ type Props = {};
 
 const MapToolbar = (props: Props) => {
   const map = useMap();
-  const mission = useSelector((state: RootState) => state.mission.data);
+  const mission = useAppSelector((state: RootState) => state.mission.data);
   const dispatch = useAppDispatch();
   const [addElementClicked, setAddElementClicked] = useState(false);
   const handleResetMapCenter = () => {

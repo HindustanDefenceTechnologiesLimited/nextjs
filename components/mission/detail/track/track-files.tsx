@@ -7,7 +7,7 @@ import { useAppDispatch } from '@/store/hook';
 import { setError, setLoading, updateTrack } from '@/store/slices/missionSlice';
 import { RootState } from '@/store/store';
 import React, { useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/store/hook';
 
 type Props = {
     track: Track;
@@ -16,7 +16,7 @@ type Props = {
 const TrackFiles = ({ track }: Props) => {
     const dispatch = useAppDispatch();
 
-    const currentTrack = useSelector((state: RootState) =>
+    const currentTrack = useAppSelector((state: RootState) =>
         state.mission.data.tracks?.find((t) => t.id === track.id)
     );
 

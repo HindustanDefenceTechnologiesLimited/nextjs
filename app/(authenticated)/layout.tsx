@@ -2,10 +2,10 @@
 import MiniBar from '@/components/mission-layout/mini-bar'
 import CreateMissionButton from '@/components/mission-layout/mission-create-button'
 import useAuthInit from '@/hooks/use-auth-init'
+import { useAppSelector } from '@/store/hook'
 import { Loader2Icon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { use, useEffect } from 'react'
-import { useSelector } from 'react-redux'
 
 type Props = {
     children: React.ReactNode,
@@ -15,8 +15,8 @@ const layout = ({ children }: Props) => {
     useAuthInit(); // Load token from cookies
 
     const router = useRouter();
-    const isAuthenticated = useSelector((s: any) => s.auth.isAuthenticated);
-    const isLoading = useSelector((s: any) => s.auth.isLoading);
+    const isAuthenticated = useAppSelector((s: any) => s.auth.isAuthenticated);
+    const isLoading = useAppSelector((s: any) => s.auth.isLoading);
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {

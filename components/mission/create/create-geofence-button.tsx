@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CreateGeofenceDto, GeofenceType } from "@/lib/types";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/store/hook";
 import { RootState } from "@/store/store";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,7 @@ const initialGeometry = {
 };
 
 const CreateGeofenceButton = () => {
-  const mission = useSelector((state: RootState) => state.mission.data);
+  const mission = useAppSelector((state: RootState) => state.mission.data);
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);

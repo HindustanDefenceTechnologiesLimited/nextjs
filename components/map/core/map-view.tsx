@@ -9,14 +9,14 @@ import TrackMarkerLayer from "./layers/track-marker-layer";
 import MapToolbar from "./map-toolbar";
 import { Annotation, Asset, Geofence, Objective, Track } from "@/lib/types";
 import RouteLayer from "./layers/route-layer";
-import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import GeofenceShapeLayer from "./layers/geofence-shape-layer";
 import { dark_style } from "./style";
 import AssetMarkerLayer from "./layers/asset-marker-layer";
 import AnnotationMarkerLayer from "./layers/annotation-marker.layer";
 import ObjectiveMarkerLayer from "./layers/objective-marker.layer";
-import OptionsLayer from "./layers/options-layer";
+import OptionsLayer from "./layers/options/options-layer";
+import { useAppSelector } from "@/store/hook";
 
 type Props = {
     entites: {
@@ -31,7 +31,7 @@ type Props = {
 export default function SimpleMap({ entites }: Props) {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<maplibregl.Map | null>(null);
-    const mission = useSelector((state: RootState) => state.mission.data);
+    const mission = useAppSelector((state: RootState) => state.mission.data);
     const [ready, setReady] = useState(false);
 
     useEffect(() => {

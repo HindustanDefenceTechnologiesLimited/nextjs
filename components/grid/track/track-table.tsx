@@ -21,7 +21,7 @@ import { toast } from 'sonner';
 import { Track } from '@/lib/types';
 import { useAppDispatch } from '@/store/hook';
 import { setSidebarData, setSidebarType } from '@/store/slices/sidebarSlice';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@/store/hook';
 import { RootState } from '@/store/store';
 import { se } from 'date-fns/locale';
 import { Separator } from '@/components/ui/separator';
@@ -70,7 +70,7 @@ export default function TrackTable({ tracks = [] }: { tracks: Track[] }) {
         pageSize: 25,
     });
     const dispatch = useAppDispatch();
-    const sidebarType = useSelector((state: RootState) => state.sidebar.type);
+    const sidebarType = useAppSelector((state: RootState) => state.sidebar.type);
     const [sorting, setSorting] = useState<SortingState>([{ id: 'name', desc: true }]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
