@@ -45,8 +45,6 @@ const OptionsLayer = (props: Props) => {
           <OptionsAccordion title="Unlocated objectives needs attention">
             <UnlocatedObjectives />
           </OptionsAccordion>
-
-          <OptionsAccordion title="Assets" />
         </div>
       )}
 
@@ -104,7 +102,7 @@ const OptionsAccordion = memo(
             {title}
           </AccordionTrigger>
 
-          <AccordionContent className="duration-500">
+          <AccordionContent className="max-h-80 overflow-y-auto">
             {children}
           </AccordionContent>
         </AccordionItem>

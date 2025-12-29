@@ -1,3 +1,4 @@
+// components/objective/objective-kanban.tsx
 "use client";
 
 import * as React from "react";
@@ -7,8 +8,8 @@ import { Objective, ObjectiveStatus, } from "@/lib/types";
 import api from "@/lib/auth";
 import { useAppDispatch } from "@/store/hook";
 import { updateObjective } from "@/store/slices/missionSlice";
-import { cn } from "@/lib/utils";
 import CreateObjective from "./create-objective";
+import { ObjectiveCard } from "./objective-kanban-card";
 
 export const OBJECTIVE_COLUMNS: {
   value: ObjectiveStatus;
@@ -25,13 +26,13 @@ type Props = {
 
 export default function ObjectiveKanban({ objectives }: Props) {
 
-  const [columns, setColumns] = React.useState<
-    Record<ObjectiveStatus, Objective[]>
-  >(() => buildColumns(objectives));
+  const columns = React.useMemo(
+    () => buildColumns(objectives),
+    [objectives]
+  );
   const dispatch = useAppDispatch();
-  React.useEffect(() => {
-    setColumns(buildColumns(objectives));
-  }, [objectives]);
+
+
   function buildColumns(objectives: Objective[]) {
     return OBJECTIVE_COLUMNS.reduce((acc, col) => {
       acc[col.value] = objectives.filter(
@@ -92,8 +93,6 @@ export default function ObjectiveKanban({ objectives }: Props) {
       }
 
     }
-
-    setColumns(newColumns);
   };
 
 
@@ -104,12 +103,12 @@ export default function ObjectiveKanban({ objectives }: Props) {
       getItemValue={(item) => item.id}
     >
       <KanbanBoard className="flex flex-col gap-2 pr-2">
-        <div className="grid auto-rows-fr sm:grid-cols-5 gap-2 h-[70vh]">
+        <div className="grid auto-rows-fr sm:grid-cols-5 gap-2 h-[68vh]">
           {OBJECTIVE_COLUMNS.map(({ value, title }) => {
             const items = columns[value] ?? [];
             if (title == 'Failed' || title == 'Completed') return null;
             return (
-              <KanbanColumn key={value} value={value} className="h-[70vh] col-span-2">
+              <KanbanColumn key={value} value={value} className="h-[68vh] col-span-2">
                 {/* Column Header */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -128,8 +127,7 @@ export default function ObjectiveKanban({ objectives }: Props) {
                     <KanbanItem
                       key={objective.id}
                       value={objective.id}
-                      asHandle
-                    // asChild
+                    // asHandle
                     >
                       <ObjectiveCard objective={objective} />
                     </KanbanItem>
@@ -138,7 +136,7 @@ export default function ObjectiveKanban({ objectives }: Props) {
               </KanbanColumn>
             );
           })}
-          <KanbanColumn value={ObjectiveStatus.COMPLETED} className="h-[70vh]">
+          <KanbanColumn value={ObjectiveStatus.COMPLETED} className="h-[68vh]">
             {/* Column Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -156,8 +154,7 @@ export default function ObjectiveKanban({ objectives }: Props) {
                 <KanbanItem
                   key={objective.id}
                   value={objective.id}
-                  asHandle
-                // asChild
+                // asHandle
                 >
                   <ObjectiveCard objective={objective} />
                 </KanbanItem>
@@ -185,7 +182,7 @@ export default function ObjectiveKanban({ objectives }: Props) {
                 <KanbanItem
                   key={objective.id}
                   value={objective.id}
-                  asHandle
+                // asHandle
                 // asChild
                 >
                   <ObjectiveCard objective={objective} className="max-w-50 min-w-50" />
@@ -202,52 +199,4 @@ export default function ObjectiveKanban({ objectives }: Props) {
       </KanbanOverlay>
     </Kanban>
   );
-}
-
-
-const ObjectiveCard = ({ objective, className }: { objective: Objective, className?: string }) => {
-  return (
-    <div className={cn("rounded-md border bg-card p-3 shadow-xs", className)}>
-      <div className="flex flex-col gap-2">
-        {/* Title + Type */}
-        <div className="flex items-start justify-between gap-2">
-          <span className="line-clamp-2 text-sm font-medium truncate">
-            {objective.title}
-          </span>
-          <Badge
-            variant="outline"
-            className="text-[10px] px-1.5 rounded-sm"
-          >
-            {objective.type.replaceAll("_", " ")}
-          </Badge>
-        </div>
-
-        {/* Description */}
-        {objective.description && (
-          <p className="text-xs text-muted-foreground line-clamp-1 truncate">
-            {objective.description}
-          </p>
-        )}
-
-        {/* Assigned Assets */}
-        {objective.allocations?.length ? (
-          <div className="flex flex-wrap gap-1">
-            {objective.allocations.map((alloc) => (
-              <Badge
-                key={alloc.id}
-                variant="secondary"
-                className="text-[10px] rounded-sm"
-              >
-                {alloc.asset?.title ?? alloc.assetId}
-              </Badge>
-            ))}
-          </div>
-        ) : (
-          <span className="text-[10px] text-muted-foreground">
-            No assets assigned
-          </span>
-        )}
-      </div>
-    </div>
-  )
 }
