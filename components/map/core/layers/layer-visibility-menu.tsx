@@ -1,15 +1,8 @@
-import { DropdownMenu } from '@/components/ui/dropdown-menu'
-import React from 'react'
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
-
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from '@/components/ui/button';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
 import { RootState } from '@/store/store';
-import { setMapElementVisibility } from '@/store/slices/mapSlice';
+import { setAllMapElementVisibility, setMapElementVisibility } from '@/store/slices/mapSlice';
 import { CheckIcon, EyeIcon } from 'lucide-react';
 type Props = {}
 
@@ -30,11 +23,25 @@ const LayerVisibilityLayer = (props: Props) => {
             <Popover>
                 <PopoverTrigger asChild>
                     <Button size='icon-sm' variant='secondary' className='bg-card border'>
-                        <EyeIcon className='size-4'/>
-                        </Button>
+                        <EyeIcon className='size-4' />
+                    </Button>
                 </PopoverTrigger>
                 <PopoverContent className='p-1 w-40' align='end'>
                     <div className='flex flex-col'>
+                        <div className='flex gap-2 items-center rounded px-2 py-1 hover:bg-muted cursor-pointer'
+                            onClick={() => dispatch(setAllMapElementVisibility({ value: false }))}
+                        >
+                            <span className='capitalize text-sm'>
+                                Hide all
+                            </span>
+                        </div>
+                        <div className='flex gap-2 items-center rounded px-2 py-1 hover:bg-muted cursor-pointer'
+                            onClick={() => dispatch(setAllMapElementVisibility({ value: true }))}
+                        >
+                            <span className='capitalize text-sm'>
+                                Show all
+                            </span>
+                        </div>
                         {
                             Object.keys(mapElementsVisibility).map((layerName: string, index: number) => (
                                 <div className='flex gap-2 items-center rounded px-2 py-1 hover:bg-muted cursor-pointer' key={index}
