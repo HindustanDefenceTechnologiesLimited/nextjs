@@ -4,6 +4,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { toast } from "sonner";
 import { Button } from "../../ui/button";
 import { RotateCw } from "lucide-react";
+import { useAppSelector } from "@/store/hook";
+import { RootState } from "@/store/store";
 
 type Props = {
     onSelect: (lng1: number, lat1: number, lng2: number, lat2: number) => void;
@@ -21,6 +23,7 @@ const MapRectangleSelector = ({ onSelect, center = [73.8567, 18.5204] }: Props) 
         lng2: 0,
         lat2: 0,
     });
+    const mission = useAppSelector((state: RootState) => state.mission.data);
     const resetSelection = () => {
         marker1Ref.current?.remove();
         marker2Ref.current?.remove();
@@ -57,8 +60,8 @@ const MapRectangleSelector = ({ onSelect, center = [73.8567, 18.5204] }: Props) 
         const map = new maplibregl.Map({
             container: mapContainer.current,
             style: "http://localhost:8080/styles/dark/style.json",
-            center,
-            zoom: 15,
+            center: mission.mapCoordinates?.center,
+            zoom: mission.mapCoordinates?.zoom,
         });
 
         mapRef.current = map;

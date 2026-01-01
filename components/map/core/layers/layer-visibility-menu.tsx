@@ -27,6 +27,7 @@ const LayerVisibilityLayer = (props: Props) => {
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className='p-1 w-40' align='end'>
+                    <p className="text-muted-foreground text-xs p-2">Layers visibility</p>
                     <div className='flex flex-col'>
                         <div className='flex gap-2 items-center rounded px-2 py-1 hover:bg-muted cursor-pointer'
                             onClick={() => dispatch(setAllMapElementVisibility({ value: false }))}

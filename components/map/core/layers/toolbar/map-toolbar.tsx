@@ -1,6 +1,6 @@
-import { Button } from "../../ui/button";
+import { Button } from "../../../../ui/button";
 import { CircleCheckBigIcon, LocateFixedIcon, MessageCirclePlusIcon, PlusIcon } from "lucide-react";
-import { useMap } from "./map-context";
+import { useMap } from "../../map-context";
 import { useAppSelector } from "@/store/hook";
 import { RootState } from "@/store/store";
 import { useAppDispatch } from "@/store/hook";
@@ -12,6 +12,9 @@ import api from "@/lib/auth";
 import { title } from "process";
 import { addAnnotation, addObjective } from "@/store/slices/missionSlice";
 import { ObjectiveStatus, ObjectiveType } from "@/lib/types";
+import DirectionsToolbar from "../directions-toolbar";
+import AddTrackPosition from "./add-track-position";
+import AddAssetPosition from "./add-asset-position";
 
 type Props = {};
 
@@ -27,27 +30,13 @@ const MapToolbar = (props: Props) => {
         mission.mapCoordinates?.center.lng,
         mission.mapCoordinates?.center.lat,
       ],
-      zoom: 15,
+      zoom: mission.mapCoordinates?.zoom,
       curve: 1,
       bearing: 0,
       pitch: 0,
     });
   };
-  // const handleAddAnnotation = () => {
-  //   setAddElementClicked(true);
-  //   map.getCanvas().style.cursor = 'crosshair';
-  //   toast.loading('Click on the map to add an annotation.', {
-  //     id: 'add-annotation',
-  //   });
-  //   map?.once("click", (e) => {
-  //     const { lng, lat } = e.lngLat;
-  //     map.getCanvas().style.removeProperty('cursor');
-  //     toast.dismiss('add-annotation')
-  //     createMapAnnotation(lng, lat)
-  //     setAddElementClicked(false)
-  //     return
-  //   })
-  // }
+
   const handleAddMapElement = (type: 'annotation' | 'objective') => {
     setAddElementClicked(true);
     map.getCanvas().style.cursor = 'crosshair';
@@ -97,13 +86,13 @@ const MapToolbar = (props: Props) => {
         dispatch(addObjective(res.data.data));
 
       }
-      
+
     } catch (error) {
-      
+
     }
   }
   return (
-    <div className="flex absolute top-2 left-2 z-9 backdrop-blur rounded-md gap-1 p-1">
+    <div className="flex absolute top-2 left-2 z-9 backdrop-blur bg-secondary rounded-md gap-1 p-1">
       <Button
         size="icon-sm"
         className="w-6 h-6 bg-background hover:bg-background/60 text-foreground"
@@ -141,6 +130,15 @@ const MapToolbar = (props: Props) => {
         <CircleCheckBigIcon className="w-3 h-3" />
         Objective
       </Button>
+      <AddTrackPosition
+        addElementClicked={addElementClicked}
+        setAddElementClicked={setAddElementClicked}
+      />
+      <AddAssetPosition
+        addElementClicked={addElementClicked}
+        setAddElementClicked={setAddElementClicked}
+      />
+      <DirectionsToolbar />
     </div>
   );
 };

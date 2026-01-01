@@ -6,7 +6,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { MapContext } from "./map-context";
 import FocusMarkerLayer from "./layers/focus-marker-layer";
 import TrackMarkerLayer from "./layers/track-marker-layer";
-import MapToolbar from "./map-toolbar";
+import MapToolbar from "./layers/toolbar/map-toolbar";
 import { Annotation, Asset, Geofence, Objective, Track } from "@/lib/types";
 import RouteLayer from "./layers/route-layer";
 import { RootState } from "@/store/store";
@@ -44,8 +44,8 @@ export default function SimpleMap({ entites }: Props) {
             container: mapContainerRef.current,
             // @ts-ignore
             style: dark_style,
-            center: [73.8567, 18.5204],
-            zoom: 15,
+            center: [mission.mapCoordinates?.center.lng || 73.8567, mission.mapCoordinates?.center.lat || 18.5204],
+            zoom: mission.mapCoordinates?.zoom || 13,
         });
 
         map.addControl(new maplibregl.NavigationControl(), "top-right");
@@ -66,7 +66,7 @@ export default function SimpleMap({ entites }: Props) {
     }, []);
     useEffect(() => {
         if (!mission.mapCoordinates) return
-        mapRef.current?.easeTo({ center: [mission.mapCoordinates?.center.lng, mission.mapCoordinates?.center.lat], zoom: 15 })
+        mapRef.current?.easeTo({ center: [mission.mapCoordinates?.center.lng, mission.mapCoordinates?.center.lat], zoom: mission.mapCoordinates?.zoom })
     }, [mission.mapCoordinates])
     return (
         <div className="relative w-full h-full rounded-md overflow-hidden">
@@ -79,7 +79,7 @@ export default function SimpleMap({ entites }: Props) {
                     <OptionsLayer />
                     <LayerVisibilityLayer/>
                     {
-                        mapElementsVisibility.directions && <DirectionsLayer START={[73.8746, 18.5286]} END={[73.6841, 18.5892]} />
+                        mapElementsVisibility.directions && <DirectionsLayer/>
                     }
                     {
                         mapElementsVisibility.focuses && (

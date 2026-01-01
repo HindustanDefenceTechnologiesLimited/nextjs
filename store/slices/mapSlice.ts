@@ -15,7 +15,7 @@ type MapState = {
     type: MapType;
     routeFocusData: PositionEntity[];
     routeFocusEntity: Track | Asset | null;
-
+    directionsData: { start: [number, number], end: [number, number] } | null;
     mapElementsVisibility: {
         tracks: boolean;
         assets: boolean;
@@ -36,7 +36,7 @@ const initialState: MapState = {
     type: null,
     routeFocusData: [],
     routeFocusEntity: null,
-
+    directionsData: null,
     mapElementsVisibility: {
         tracks: true,
         assets: true,
@@ -73,6 +73,9 @@ const mapSlice = createSlice({
         setAllMapElementVisibility (state, action: PayloadAction<{ value: boolean }>) {
             Object.keys(state.mapElementsVisibility).forEach(key => state.mapElementsVisibility[key as keyof MapState['mapElementsVisibility']] = action.payload.value);
         },
+        setDirectionsData(state, action: PayloadAction<{ start: [number, number], end: [number, number] } | null>) {
+            state.directionsData = action.payload;  
+        },
         setLoading(state, action: PayloadAction<boolean>) {
             state.loading = action.payload;
         },
@@ -82,5 +85,15 @@ const mapSlice = createSlice({
     },
 });
 
-export const { setMapData, setMapType, setLoading, setError, setRouteFocusData, setRouteFocusEntity, setMapElementVisibility, setAllMapElementVisibility } = mapSlice.actions;
+export const {
+  setMapData,
+  setMapType,
+  setLoading,
+  setError,
+  setRouteFocusData,
+  setRouteFocusEntity,
+  setMapElementVisibility,
+  setAllMapElementVisibility,
+  setDirectionsData
+} = mapSlice.actions;
 export default mapSlice.reducer;

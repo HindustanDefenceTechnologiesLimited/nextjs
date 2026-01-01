@@ -4,6 +4,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { toast } from "sonner";
 import { Button } from "../../ui/button";
 import { RotateCw } from "lucide-react";
+import { useAppSelector } from "@/store/hook";
+import { RootState } from "@/store/store";
 
 type Props = {
   onSelect: (lng: number, lat: number, radius: number) => void;
@@ -65,7 +67,7 @@ const MapCircleSelector = ({
 }: Props) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
-
+  const mission = useAppSelector((state: RootState) => state.mission.data);
   const centerMarkerRef = useRef<maplibregl.Marker | null>(null);
 
   const [circle, setCircle] = useState({
@@ -100,8 +102,8 @@ const MapCircleSelector = ({
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: "http://localhost:8080/styles/dark/style.json",
-      center,
-      zoom: 15,
+      center: mission.mapCoordinates?.center,
+      zoom: mission.mapCoordinates?.zoom,
     });
 
     mapRef.current = map;

@@ -6,7 +6,7 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import TrackPopup from "../components/map/popup/track-popup";
 import { Track, TrackPosition } from "@/lib/types";
-import MapToolbar from "../components/map/core/map-toolbar";
+import MapToolbar from "../components/map/core/layers/toolbar/map-toolbar";
 import { useAppSelector } from "@/store/hook";
 import { RootState } from "@/store/store";
 type Props = {

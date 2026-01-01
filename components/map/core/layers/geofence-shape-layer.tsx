@@ -29,26 +29,31 @@ type Props = {
 export default function GeofenceShapeLayer({ geofences }: Props) {
   const map = useMap();
   const popupMarkersRef = useRef<PopupMarker[]>([]);
+const isUnmountingRef = useRef(false);
 
   /* ------------------------------------------------
      INIT
   ------------------------------------------------- */
-  useEffect(() => {
-    if (!map) return;
+useEffect(() => {
+  if (!map) return;
 
-    const run = () => initLayer();
+  isUnmountingRef.current = false;
 
-    if (!map.isStyleLoaded()) {
-      map.once("load", run);
-    } else {
-      run();
-    }
+  const run = () => initLayer();
 
-    return () => {
-      cleanup();
-      map.off("load", run);
-    };
-  }, [map, geofences]);
+  if (!map.isStyleLoaded()) {
+    map.once("load", run);
+  } else {
+    run();
+  }
+
+  return () => {
+    isUnmountingRef.current = true;
+    cleanup();
+    map.off("load", run);
+  };
+}, [map, geofences]);
+
 
   /* ------------------------------------------------
      INIT LAYER
@@ -121,36 +126,45 @@ export default function GeofenceShapeLayer({ geofences }: Props) {
   /* ------------------------------------------------
      CLEANUP (CRITICAL)
   ------------------------------------------------- */
-  function cleanup() {
-    if (!map) return;
+function cleanup() {
+  if (!map || !map.isStyleLoaded()) return;
 
-    // 1️⃣ Unmount React trees FIRST
-    popupMarkersRef.current.forEach(({ root }) => {
-      try {
-        root.unmount();
-      } catch {}
-    });
+  /* 1️⃣ Remove MapLibre markers (safe) */
+  popupMarkersRef.current.forEach(({ marker }) => {
+    try {
+      marker.remove();
+    } catch {}
+  });
 
-    // 2️⃣ Remove markers
-    popupMarkersRef.current.forEach(({ marker }) => {
-      try {
-        marker.remove();
-      } catch {}
-    });
+  /* 2️⃣ Defer React unmount (CRITICAL) */
+  popupMarkersRef.current.forEach(({ root }) => {
+    try {
+      queueMicrotask(() => {
+        if (!isUnmountingRef.current) {
+          root.unmount();
+        }
+      });
+    } catch {}
+  });
 
-    popupMarkersRef.current = [];
+  popupMarkersRef.current = [];
 
-    // 3️⃣ Remove layers & sources
-    geofences.forEach((g) => {
-      const sourceId = `geofence-source-${g.id}`;
-      const fillLayerId = `geofence-layer-${g.id}`;
-      const outlineLayerId = `${fillLayerId}-outline`;
+  /* 3️⃣ Remove layers & sources */
+  geofences.forEach((g) => {
+    const sourceId = `geofence-source-${g.id}`;
+    const fillLayerId = `geofence-layer-${g.id}`;
+    const outlineLayerId = `${fillLayerId}-outline`;
 
+    try {
       if (map.getLayer(outlineLayerId)) map.removeLayer(outlineLayerId);
       if (map.getLayer(fillLayerId)) map.removeLayer(fillLayerId);
       if (map.getSource(sourceId)) map.removeSource(sourceId);
-    });
-  }
+    } catch {
+      // map already destroyed — ignore
+    }
+  });
+}
+
 
   return null;
 }

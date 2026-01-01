@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { useAppSelector } from "@/store/hook";
+import { RootState } from "@/store/store";
 
 type Props = {
   onSelect: (lng: number, lat: number) => void;
@@ -11,15 +13,15 @@ const MapLocationSelector = ({ onSelect, center = [73.8567, 18.5204] }: Props) =
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markerRef = useRef<maplibregl.Marker | null>(null);
-
+  const mission = useAppSelector((state: RootState) => state.mission.data);
   useEffect(() => {
     if (!mapContainer.current) return;
 
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: "http://localhost:8080/styles/dark/style.json",
-      center: center,
-      zoom: 15,
+      center: mission.mapCoordinates?.center,
+      zoom: mission.mapCoordinates?.zoom,
     });
 
     mapRef.current = map;

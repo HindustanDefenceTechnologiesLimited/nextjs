@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import maplibregl from "maplibre-gl";
-import { Annotation, Objective } from "@/lib/types";
+import { Objective } from "@/lib/types";
 import { useMap } from "../map-context";
 import ReduxProvider from "@/components/provider/redux-provider";
 import ObjectivePopup from "../../popup/objective-popup";

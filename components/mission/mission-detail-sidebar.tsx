@@ -36,7 +36,7 @@ const MissionDetailSidebar =  () => {
   return (
     <div className='p-2'>
         <h2 className='text-lg font-semibold'>{mission?.name}</h2>
-        <p className='text-xs text-muted-foreground'>Description: {mission?.description}</p>
+        <p className='text-xs text-muted-foreground truncate'>{mission?.description}</p>
         <div className='flex gap-2 mt-1 w-full items-center'>
           <Badge className='capitalize h-fit'>{mission?.type}</Badge>
           <Select defaultValue={mission?.status} onValueChange={handleMissionStatusChange}>
