@@ -17,6 +17,8 @@ import AnnotationMarkerLayer from "./layers/annotation-marker.layer";
 import ObjectiveMarkerLayer from "./layers/objective-marker.layer";
 import OptionsLayer from "./layers/options/options-layer";
 import { useAppSelector } from "@/store/hook";
+import DirectionsLayer from "./layers/directions-layer";
+import LayerVisibilityLayer from "./layers/layer-visibility-menu";
 
 type Props = {
     entites: {
@@ -33,6 +35,7 @@ export default function SimpleMap({ entites }: Props) {
     const mapRef = useRef<maplibregl.Map | null>(null);
     const mission = useAppSelector((state: RootState) => state.mission.data);
     const [ready, setReady] = useState(false);
+    const mapElementsVisibility = useAppSelector((state: RootState) => state.map.mapElementsVisibility);
 
     useEffect(() => {
         if (!mapContainerRef.current || mapRef.current) return;
@@ -68,25 +71,44 @@ export default function SimpleMap({ entites }: Props) {
     return (
         <div className="relative w-full h-full rounded-md overflow-hidden">
 
-            {/* ✅ container NEVER changes */}
             <div ref={mapContainerRef} className="w-full h-full" />
 
             {/* ✅ layers render only after map is ready */}
             {ready && (
                 <MapContext.Provider value={mapRef.current!}>
                     <OptionsLayer />
-                    <ObjectiveMarkerLayer objectives={entites.objectives}/>
-                    <AnnotationMarkerLayer annotations={entites.annotations}/>
-                    <RouteLayer />
-
-                    <MapToolbar />
-                    <FocusMarkerLayer />
-                    <AssetMarkerLayer assets={entites.assets} />
-                    <TrackMarkerLayer tracks={entites.tracks} />
-                    <GeofenceShapeLayer geofences={entites.geofences}/>
+                    <LayerVisibilityLayer/>
+                    {
+                        mapElementsVisibility.directions && <DirectionsLayer START={[73.8746, 18.5286]} END={[73.6841, 18.5892]} />
+                    }
+                    {
+                        mapElementsVisibility.focuses && (
+                            <>
+                                <FocusMarkerLayer />
+                                <RouteLayer />
+                            </>
+                        )
+                    }
+                    {
+                        mapElementsVisibility.annotations && <AnnotationMarkerLayer annotations={entites.annotations} />
+                    }
+                    {
+                        mapElementsVisibility.tracks && <TrackMarkerLayer tracks={entites.tracks} />
+                    }
+                    {
+                        mapElementsVisibility.geofences && <GeofenceShapeLayer geofences={entites.geofences} />
+                    }
+                    {
+                        mapElementsVisibility.assets && <AssetMarkerLayer assets={entites.assets} />
+                    }
+                    {
+                        mapElementsVisibility.objectives && <ObjectiveMarkerLayer objectives={entites.objectives} />
+                    }
+                    {
+                        mapElementsVisibility.toolbar && <MapToolbar />
+                    }
                 </MapContext.Provider>
             )}
         </div>
     );
 }
-

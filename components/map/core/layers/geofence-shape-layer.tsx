@@ -1,14 +1,15 @@
+"use client";
+
 import { useEffect, useRef } from "react";
-import maplibregl, { GeoJSONSource } from "maplibre-gl";
+import maplibregl from "maplibre-gl";
 import { Geofence } from "@/lib/types";
 import { useMap } from "../map-context";
-import { createRoot } from "react-dom/client";
+import { createRoot, Root } from "react-dom/client";
 
-// Your external component
 import GeofencePopup from "../../popup/geofence-popup";
 import ReduxProvider from "@/components/provider/redux-provider";
 
-const GEOFENCE_COLORS = {
+const GEOFENCE_COLORS: Record<string, string> = {
   SAFE_ZONE: "#22c55e",
   EXCLUSION: "#00f7ff",
   INCLUSION: "#ff00fb",
@@ -16,71 +17,10 @@ const GEOFENCE_COLORS = {
   RESTRICTED_AREA: "#ff0000",
 };
 
-function rectangleToPolygon(coords: number[][]): GeoJSON.Polygon {
-  const [sw, ne] = coords;
-
-  return {
-    type: "Polygon",
-    coordinates: [
-      [
-        [sw[0], sw[1]],
-        [ne[0], sw[1]],
-        [ne[0], ne[1]],
-        [sw[0], ne[1]],
-        [sw[0], sw[1]],
-      ],
-    ],
-  };
-}
-
-function circleToPolygon(
-  center: [number, number],
-  radiusMeters: number,
-  steps = 64
-): GeoJSON.Polygon {
-  const coords: number[][] = [];
-  const [lng, lat] = center;
-  const earthRadius = 6378137;
-
-  for (let i = 0; i <= steps; i++) {
-    const angle = (i * 2 * Math.PI) / steps;
-    const dx = radiusMeters * Math.cos(angle);
-    const dy = radiusMeters * Math.sin(angle);
-
-    const newLng =
-      lng +
-      ((dx / earthRadius) * (180 / Math.PI)) / Math.cos((lat * Math.PI) / 180);
-    const newLat = lat + (dy / earthRadius) * (180 / Math.PI);
-
-    coords.push([newLng, newLat]);
-  }
-
-  return { type: "Polygon", coordinates: [coords] };
-}
-
-/* -------------------------------------------------------
-   Get NORTH-WEST (top-left) coordinate of polygon
-------------------------------------------------------- */
-function getTopLeftCoordinate(poly: GeoJSON.Polygon): [number, number] {
-  const coords = poly.coordinates[0];
-  let topLeft = coords[0];
-
-  coords.forEach((c) => {
-    const [lng, lat] = c;
-
-    // "Top" → highest latitude
-    // "Left" → lowest longitude
-    if (lat > topLeft[1] || (lat === topLeft[1] && lng < topLeft[0])) {
-      topLeft = c;
-    }
-  });
-
-  return topLeft as [number, number];
-}
-
-/* -------------------------------------------------------
-   Component
-------------------------------------------------------- */
+type PopupMarker = {
+  marker: maplibregl.Marker;
+  root: Root;
+};
 
 type Props = {
   geofences: Geofence[];
@@ -88,73 +28,53 @@ type Props = {
 
 export default function GeofenceShapeLayer({ geofences }: Props) {
   const map = useMap();
-  const markerRefs = useRef<maplibregl.Marker[]>([]);
+  const popupMarkersRef = useRef<PopupMarker[]>([]);
 
+  /* ------------------------------------------------
+     INIT
+  ------------------------------------------------- */
   useEffect(() => {
     if (!map) return;
 
+    const run = () => initLayer();
+
     if (!map.isStyleLoaded()) {
-      const handler = () => initLayer();
-      map.once("load", handler);
-      return () => map.off("load", handler);
+      map.once("load", run);
+    } else {
+      run();
     }
 
-    // Map is already loaded → init immediately
-    initLayer();
-
     return () => {
-      queueMicrotask(() => cleanupLayers());
+      cleanup();
+      map.off("load", run);
     };
   }, [map, geofences]);
-  
+
+  /* ------------------------------------------------
+     INIT LAYER
+  ------------------------------------------------- */
   function initLayer() {
-    // Cleanup old markers
-    markerRefs.current.forEach((m) => m.remove());
-    markerRefs.current = [];
-
-    // Cleanup old layers & sources
-    geofences.forEach((g) => {
-      const layerId = `geofence-layer-${g.id}`;
-      const sourceId = `geofence-source-${g.id}`;
-
-      if (map.getLayer(layerId)) map.removeLayer(layerId);
-      if (map.getLayer(`${layerId}-outline`))
-        map.removeLayer(`${layerId}-outline`);
-      if (map.getSource(sourceId)) map.removeSource(sourceId);
-    });
+    cleanup();
 
     geofences.forEach((g) => {
       const sourceId = `geofence-source-${g.id}`;
-      const layerId = `geofence-layer-${g.id}`;
+      const fillLayerId = `geofence-layer-${g.id}`;
+      const outlineLayerId = `${fillLayerId}-outline`;
 
-      let geometry: GeoJSON.Polygon | null = null;
-
-      if (g.geometry.shapeType === "rectangle") {
-        geometry = rectangleToPolygon(g.geometry.coordinates);
-      }
-
-      if (g.geometry.shapeType === "circle" && g.geometry.radius) {
-        geometry = circleToPolygon(
-          g.geometry.coordinates[0] as [number, number],
-          g.geometry.radius as number
-        );
-      }
-
+      const geometry = buildGeometry(g);
       if (!geometry) return;
 
-      /* Add GeoJSON source */
       map.addSource(sourceId, {
         type: "geojson",
         data: {
           type: "Feature",
           geometry,
-          properties: { type: g.type },
+          properties: {},
         },
       });
 
-      /* Fill layer */
       map.addLayer({
-        id: layerId,
+        id: fillLayerId,
         type: "fill",
         source: sourceId,
         paint: {
@@ -163,9 +83,8 @@ export default function GeofenceShapeLayer({ geofences }: Props) {
         },
       });
 
-      /* Outline layer */
       map.addLayer({
-        id: `${layerId}-outline`,
+        id: outlineLayerId,
         type: "line",
         source: sourceId,
         paint: {
@@ -178,13 +97,10 @@ export default function GeofenceShapeLayer({ geofences }: Props) {
         },
       });
 
-      const topLeft = getTopLeftCoordinate(geometry);
-
+      /* ---------- Popup marker ---------- */
       const el = document.createElement("div");
-      el.style.width = "auto";
-      el.style.height = "auto";
-      el.style.transform = "translate(100%, -100%)";
       const root = createRoot(el);
+
       root.render(
         <ReduxProvider>
           <GeofencePopup geofence={g} />
@@ -194,30 +110,113 @@ export default function GeofenceShapeLayer({ geofences }: Props) {
       const marker = new maplibregl.Marker({
         element: el,
         anchor: "center",
-        // rotation: 0,
-        rotationAlignment: "map",
-        pitchAlignment: "viewport",
       })
-        .setLngLat(topLeft)
+        .setLngLat(getTopLeftCoordinate(geometry))
         .addTo(map);
 
-      markerRefs.current.push(marker);
+      popupMarkersRef.current.push({ marker, root });
     });
   }
 
-  function cleanupLayers() {
-    markerRefs.current.forEach((m) => m.remove());
-    markerRefs.current = [];
+  /* ------------------------------------------------
+     CLEANUP (CRITICAL)
+  ------------------------------------------------- */
+  function cleanup() {
+    if (!map) return;
 
+    // 1️⃣ Unmount React trees FIRST
+    popupMarkersRef.current.forEach(({ root }) => {
+      try {
+        root.unmount();
+      } catch {}
+    });
+
+    // 2️⃣ Remove markers
+    popupMarkersRef.current.forEach(({ marker }) => {
+      try {
+        marker.remove();
+      } catch {}
+    });
+
+    popupMarkersRef.current = [];
+
+    // 3️⃣ Remove layers & sources
     geofences.forEach((g) => {
-      const layerId = `geofence-layer-${g.id}`;
       const sourceId = `geofence-source-${g.id}`;
+      const fillLayerId = `geofence-layer-${g.id}`;
+      const outlineLayerId = `${fillLayerId}-outline`;
 
-      if (map.getLayer(`${layerId}-outline`))
-        map.removeLayer(`${layerId}-outline`);
-      if (map.getLayer(layerId)) map.removeLayer(layerId);
+      if (map.getLayer(outlineLayerId)) map.removeLayer(outlineLayerId);
+      if (map.getLayer(fillLayerId)) map.removeLayer(fillLayerId);
       if (map.getSource(sourceId)) map.removeSource(sourceId);
     });
   }
+
   return null;
+}
+
+/* ------------------------------------------------
+   HELPERS
+------------------------------------------------- */
+
+function rectangleToPolygon(coords: number[][]): GeoJSON.Polygon {
+  const [sw, ne] = coords;
+  return {
+    type: "Polygon",
+    coordinates: [[
+      [sw[0], sw[1]],
+      [ne[0], sw[1]],
+      [ne[0], ne[1]],
+      [sw[0], ne[1]],
+      [sw[0], sw[1]],
+    ]],
+  };
+}
+
+function circleToPolygon(
+  center: [number, number],
+  radius: number,
+  steps = 64
+): GeoJSON.Polygon {
+  const [lng, lat] = center;
+  const coords: number[][] = [];
+  const R = 6378137;
+
+  for (let i = 0; i <= steps; i++) {
+    const a = (i * 2 * Math.PI) / steps;
+    const dx = radius * Math.cos(a);
+    const dy = radius * Math.sin(a);
+
+    coords.push([
+      lng + ((dx / R) * 180) / Math.PI / Math.cos((lat * Math.PI) / 180),
+      lat + ((dy / R) * 180) / Math.PI,
+    ]);
+  }
+
+  return { type: "Polygon", coordinates: [coords] };
+}
+
+function buildGeometry(g: Geofence): GeoJSON.Polygon | null {
+  if (g.geometry.shapeType === "rectangle") {
+    return rectangleToPolygon(g.geometry.coordinates);
+  }
+
+  if (g.geometry.shapeType === "circle" && g.geometry.radius) {
+    return circleToPolygon(
+      g.geometry.coordinates[0] as [number, number],
+      g.geometry.radius
+    );
+  }
+
+  return null;
+}
+
+function getTopLeftCoordinate(poly: GeoJSON.Polygon): [number, number] {
+  return poly.coordinates[0].reduce(
+    (best, cur) =>
+      cur[1] > best[1] || (cur[1] === best[1] && cur[0] < best[0])
+        ? cur
+        : best,
+    poly.coordinates[0][0]
+  ) as [number, number];
 }

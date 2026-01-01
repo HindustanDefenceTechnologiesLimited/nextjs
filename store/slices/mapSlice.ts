@@ -15,6 +15,17 @@ type MapState = {
     type: MapType;
     routeFocusData: PositionEntity[];
     routeFocusEntity: Track | Asset | null;
+
+    mapElementsVisibility: {
+        tracks: boolean;
+        assets: boolean;
+        geofences: boolean;
+        focuses: boolean;
+        annotations: boolean;
+        objectives: boolean;
+        directions: boolean;
+        toolbar: boolean;
+    };
     loading: boolean;
     error?: string | null;
 };
@@ -25,6 +36,17 @@ const initialState: MapState = {
     type: null,
     routeFocusData: [],
     routeFocusEntity: null,
+
+    mapElementsVisibility: {
+        tracks: true,
+        assets: true,
+        geofences: true,
+        focuses: true,
+        annotations: true,
+        objectives: true,
+        directions: true,
+        toolbar: true
+    },
     loading: false,
     error: null,
 };
@@ -45,14 +67,20 @@ const mapSlice = createSlice({
         setMapType(state, action: PayloadAction<MapType>) {
             state.type = action.payload;
         },
+        setMapElementVisibility (state, action: PayloadAction<{ key: keyof MapState['mapElementsVisibility'], value: boolean }>) {
+            state.mapElementsVisibility[action.payload.key] = action.payload.value;
+        },
+        setAllMapElementVisibility (state, action: PayloadAction<{ value: boolean }>) {
+            Object.keys(state.mapElementsVisibility).forEach(key => state.mapElementsVisibility[key as keyof MapState['mapElementsVisibility']] = action.payload.value);
+        },
         setLoading(state, action: PayloadAction<boolean>) {
             state.loading = action.payload;
         },
         setError(state, action: PayloadAction<string | null>) {
             state.error = action.payload;
-        }
+        },
     },
 });
 
-export const { setMapData, setMapType, setLoading, setError, setRouteFocusData, setRouteFocusEntity } = mapSlice.actions;
+export const { setMapData, setMapType, setLoading, setError, setRouteFocusData, setRouteFocusEntity, setMapElementVisibility, setAllMapElementVisibility } = mapSlice.actions;
 export default mapSlice.reducer;

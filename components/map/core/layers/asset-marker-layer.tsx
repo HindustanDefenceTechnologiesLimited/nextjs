@@ -20,21 +20,23 @@ export default function AssetMarkerLayer({ assets }: Props) {
     if (!map) return;
 
     const run = () => {
-      cleanup();
+      // cleanup();
       init();
     };
 
     // If style is not loaded, wait for it
     if (!map.isStyleLoaded()) {
       map.once("load", run);
-      return () => map.off("load", run);
+    } else {
+      run();
     }
 
     // Style already loaded → run immediately
-    run();
+    // run();
 
     return () => {
-      // queueMicrotask(() => cleanup());
+      cleanup();
+      map.off("load", run);
     };
   }, [assets, map]);
 
@@ -73,15 +75,16 @@ export default function AssetMarkerLayer({ assets }: Props) {
      Cleanup markers + roots
   -------------------------- */
   function cleanup() {
-    try {
-      rootsRef.current.forEach((r) => r.unmount());
-      markersRef.current.forEach((m) => m.remove());
-    } catch (e) {
-      // ignore cleanup errors when map is already destroyed
-    }
+    const roots = rootsRef.current;
+    const markers = markersRef.current;
 
     rootsRef.current = [];
     markersRef.current = [];
+
+    queueMicrotask(() => {
+      roots.forEach((r) => r.unmount());
+      markers.forEach((m) => m.remove());
+    });
   }
 
   return null;

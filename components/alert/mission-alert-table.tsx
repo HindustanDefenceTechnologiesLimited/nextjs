@@ -371,7 +371,6 @@ export default function AlertTable({ alerts = [] }: { alerts: Alert[] }) {
                                 <AlertTriangle className="w-5 h-5 text-amber-400" />
                                 Alerts
                             </p>
-
                             <div className="relative">
                                 <Search className="size-4 text-muted-foreground absolute start-3 top-1/2 -translate-y-1/2" />
                                 <Input
